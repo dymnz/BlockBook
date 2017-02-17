@@ -24,3 +24,13 @@ Truffle
 
 5. truffle migrate
 
+
+Sync
+
+1. npm install
+
+2. truffle compile
+
+3. truffle migrate
+
+
