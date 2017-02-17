@@ -23,10 +23,10 @@ window.App = {
 
     // Bootstrap the MetaCoin abstraction for Use.
     MetaCoin.setProvider(web3.currentProvider);
-
+    
     // Get the initial account balance so it can be displayed.
     web3.eth.getAccounts(function(err, accs) {
-      if (err != null) {
+      if (err != null) {        
         alert("There was an error fetching your accounts.");
         return;
       }
@@ -83,6 +83,24 @@ window.App = {
       console.log(e);
       self.setStatus("Error sending coin; see log.");
     });
+  },
+
+  listBalance: function () {
+    var self = this;
+
+    var meta;
+    for (var i = 0 ; i<accounts.length ; i++)
+    {
+      MetaCoin.deployed().then(function(instance) {
+        meta = instance;
+        return meta.getBalance.call(accounts[i], {from: account});
+      }).then(function(value) {
+        console.log("account:" + i + ":" + value);
+      }).catch(function(e) {
+        console.log(e);
+        self.setStatus("Error getting balance; see log.");
+      });
+    }
   }
 };
 
