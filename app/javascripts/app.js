@@ -14,8 +14,14 @@ var MetaCoin = contract(metacoin_artifacts);
 // The following code is simple to show off interacting with your contracts.
 // As your needs grow you will likely need to change its form and structure.
 // For application bootstrapping, check out window.addEventListener below.
-var accounts;
-var account;
+
+// Model
+var accounts = [];
+var accountBalances = [];
+var account;  // Main account
+
+// View
+var tableRows = [];
 
 window.App = {
   start: function() {
@@ -39,6 +45,19 @@ window.App = {
       accounts = accs;
       account = accounts[0];
 
+
+      // Construct balance table
+      var table = document.getElementById("accountTable");
+      for (var i = 0 ; i < accounts.length ; i++)
+      {
+        tableRows[i] = table.insertRow(-1);   
+        tableRows[i].insertCell(0);
+        tableRows[i].insertCell(1);
+
+        tableRows[i].cells[0].innerHTML = accounts[i];
+        tableRows[i].cells[1].setAttribute("align", "right");
+      }
+
       self.refreshBalance();
     });
   },
@@ -49,19 +68,7 @@ window.App = {
   },
 
   refreshBalance: function() {
-    var self = this;
-
-    var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta.getBalance.call(account, {from: account});
-    }).then(function(value) {
-      var balance_element = document.getElementById("balance");
-      balance_element.innerHTML = value.valueOf();
-    }).catch(function(e) {
-      console.log(e);
-      self.setStatus("Error getting balance; see log.");
-    });
+    this.listBalance();
   },
 
   sendCoin: function() {
@@ -85,23 +92,27 @@ window.App = {
     });
   },
 
+  // Get balance in each account and update
   listBalance: function () {
     var self = this;
-
-    var meta;
-    for (var i = 0 ; i<accounts.length ; i++)
-    {
-      MetaCoin.deployed().then(function(instance) {
+    
+    accounts.forEach(function(account, index) {
+      var meta;
+      MetaCoin.deployed().then(function(instance) {            
         meta = instance;
-        return meta.getBalance.call(accounts[i], {from: account});
+        return meta.getBalance.call(accounts[index], {from: account});
       }).then(function(value) {
-        console.log("account:" + i + ":" + value);
+        // Modify account balance in Model and View
+        accountBalances[index] = value.valueOf();
+        tableRows[index].cells[1].innerHTML = value.valueOf();        
       }).catch(function(e) {
         console.log(e);
         self.setStatus("Error getting balance; see log.");
-      });
-    }
+      });    
+    })
   }
+
+
 };
 
 window.addEventListener('load', function() {
