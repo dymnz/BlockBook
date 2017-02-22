@@ -98,8 +98,9 @@
   * Paid Requests
 
   
-### Storage Structure
+### Design rules
 * A Beggar's Requests is stored in an array under the Beggar's Account
+* Rmoveal of Account/Request requires multi-sig
 
   
 ### Vocabulary
