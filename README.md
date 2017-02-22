@@ -1,5 +1,5 @@
 
-## Setup
+## Development Setup
 ### TestRPC Setup
 
 #### Make sure Node.js and NPM are installed
