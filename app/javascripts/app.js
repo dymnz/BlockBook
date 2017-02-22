@@ -9,26 +9,25 @@ import { default as contract } from 'truffle-contract'
 import metacoin_artifacts from '../../build/contracts/MetaCoin.json'
 
 // MetaCoin is our usable abstraction, which we'll use through the code below.
-var MetaCoin = contract(metacoin_artifacts);
+var BlockBook = contract(metacoin_artifacts);
 
 // The following code is simple to show off interacting with your contracts.
 // As your needs grow you will likely need to change its form and structure.
 // For application bootstrapping, check out window.addEventListener below.
 
 // Model
-var accounts = [];
 var accountBalances = [];
-var account;  // Main account
+var account;  
 
 // View
-var tableRows = [];
+var beggarTableRows = [];
 
 window.App = {
   start: function() {
     var self = this;
 
     // Bootstrap the MetaCoin abstraction for Use.
-    MetaCoin.setProvider(web3.currentProvider);
+    BlockBook.setProvider(web3.currentProvider);
     
     // Get the initial account balance so it can be displayed.
     web3.eth.getAccounts(function(err, accs) {
@@ -41,21 +40,19 @@ window.App = {
         alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
         return;
       }
-
-      accounts = accs;
-      account = accounts[0];
+      account = accs[0];
 
 
       // Construct balance table
-      var table = document.getElementById("accountTable");
+      var table = document.getElementById("beggarTable");
       for (var i = 0 ; i < accounts.length ; i++)
       {
-        tableRows[i] = table.insertRow(-1);   
-        tableRows[i].insertCell(0);
-        tableRows[i].insertCell(1);
+        beggarTableRows[i] = table.insertRow(-1);   
+        beggarTableRows[i].insertCell(0);
+        beggarTableRows[i].insertCell(1);
 
-        tableRows[i].cells[0].innerHTML = accounts[i];
-        tableRows[i].cells[1].setAttribute("align", "right");
+        beggarTableRows[i].cells[0].innerHTML = accounts[i];
+        beggarTableRows[i].cells[1].setAttribute("align", "right");
       }
 
       self.refreshBalance();
@@ -104,7 +101,7 @@ window.App = {
       }).then(function(value) {
         // Modify account balance in Model and View
         accountBalances[index] = value.valueOf();
-        tableRows[index].cells[1].innerHTML = value.valueOf();        
+        beggarTableRows[index].cells[1].innerHTML = value.valueOf();        
       }).catch(function(e) {
         console.log(e);
         self.setStatus("Error getting balance; see log.");
