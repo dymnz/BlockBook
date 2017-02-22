@@ -42,17 +42,7 @@ window.App = {
       }
       account = accs[0];
 
-      // Construct balance table
-      var table = document.getElementById("beggarTable");
-      for (var i = 0 ; i < accounts.length ; i++)
-      {
-        beggarTableRows[i] = table.insertRow(-1);   
-        beggarTableRows[i].insertCell(0);
-        beggarTableRows[i].insertCell(1);
 
-        //beggarTableRows[i].cells[0].innerHTML = accounts[i];
-        beggarTableRows[i].cells[1].setAttribute("align", "right");
-      }
 
       self.refreshBalance();
     });
@@ -70,38 +60,38 @@ window.App = {
   // Get balance in each account and update
   listBalance: function () {
     var self = this;
-    
-    accounts.forEach(function(account, index) {
-      var meta;
-      MetaCoin.deployed().then(function(instance) {            
-        meta = instance;
-        return meta.getBalance.call(accounts[index], {from: account});
-      }).then(function(value) {
-        // Modify account balance in Model and View
-        accountBalances[index] = value.valueOf();
-        beggarTableRows[index].cells[1].innerHTML = value.valueOf();        
-      }).catch(function(e) {
-        console.log(e);
-        self.setStatus("Error getting balance; see log.");
-      });    
-    })
+  },
+  constructBeggarTable: function (count) {
+      // Construct balance table
+      var table = document.getElementById("beggarTable");
+      for (var i = 0 ; i < count; i++)
+      {
+        beggarTableRows[i] = table.insertRow(-1);   
+        beggarTableRows[i].insertCell(0);
+        beggarTableRows[i].insertCell(1);
+
+        beggarTableRows[i].cells[1].setAttribute("align", "right");
+      }
   },
 
   getBeggarList: function () {
     var meta;
+    var self = this;
     BlockBook.deployed().then(function(instance) {            
         meta = instance;
         return meta.getBeggars();
       }).then(function(value) {
         // Modify account balance in Model and View
-          console.log(value.valueOf());
+          self.constructBeggarTable(value.length);
+          value.forEach(function(account, index){
+            beggarTableRows[index].cells[0].innerHTML = account;
+          })
           // beggarAddresses.push()
-          // beggarTableRows[index].cells[0].innerHTML = address;                  
+          // ;                  
       }).catch(function(e) {
         console.log(e);
       });    
   }
-
 };
 
 window.addEventListener('load', function() {
