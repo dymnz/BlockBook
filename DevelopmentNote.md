@@ -2,7 +2,7 @@
 #### 1. Admin:
   1. Assign Giver/Beggar role to an address
   `assignRole(enum Role role, address toAddress)`
-  
+
 #### 2. Giver:
   1. Change Request status
 
@@ -90,9 +90,10 @@
 * Fund
   * Amount
   * Reason
+  
 **Every Fund is associated with a FundID. The FundID is the index of a Fund in a Giver's Fund array**  
+
 * Account
-  * Address
   * Role
   * Paid Requests
 
