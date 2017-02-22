@@ -26,13 +26,13 @@ contract BlockBook {
 
 	/*Entry struct*/
 	struct Request {
-		uint amount;
+		uint24 amount;
 		string reason;
 		string receiptURL;
 		uint createdOn;
 	}
 	struct Fund {
-		uint amount;
+		uint24 amount;
 		string reason;
 	}
 	struct RemoveVote {
@@ -44,18 +44,18 @@ contract BlockBook {
 	struct Giver {
 		address addr;
 		string name;
-		uint budget;
-		uint approved;
-		uint paid;
+		uint24 budget;
+		uint24 approved;
+		uint24 paid;
 		Fund[] funds;
 		FundStatus[] fundStatus;
 	}
 	struct Beggar {
 		string name;
-		uint addressIndex;
-		uint requested;
-		uint approved;
-		uint paid;
+		uint24 addressIndex;
+		uint24 requested;
+		uint24 approved;
+		uint24 paid;
 		Request[] requests;
         RequestStatus[] requestStatus;		
 		RemoveVote removeVote;
@@ -95,13 +95,9 @@ contract BlockBook {
     }
     
     
-	/*Admin function*/
+	/*Admin function*/////////////////////////////////////////////////////////
 	function BlockBook() {
 	    admin = msg.sender;
-	    
-	    // Dummy address to help acount removal
-	    beggarAddresses.push(0);
-	    
 	    
 	    // FOR TESTING
 	    addBeggar(msg.sender, "admin");
@@ -113,7 +109,7 @@ contract BlockBook {
         
         beggars[targetAddress].name = name;
         beggars[targetAddress].removeVote = RemoveVote({giverVote: false, adminVote: false});
-        beggars[targetAddress].addressIndex = beggarAddresses.length;
+        beggars[targetAddress].addressIndex = uint24(beggarAddresses.length);
         
         beggarAddresses.push(targetAddress);
 
@@ -129,8 +125,8 @@ contract BlockBook {
         admin = targetAddress;
     }
 
-    /*Beggar function*/
-    function addRequest(uint amount, string reason, string receiptURL) onlyBeggar {
+    /*Beggar function*/////////////////////////////////////////////////////////
+    function addRequest(uint24 amount, string reason, string receiptURL) onlyBeggar {
         beggars[msg.sender].requests.push( Request({
             amount: amount, 
             reason: reason,
@@ -177,16 +173,16 @@ contract BlockBook {
         
     }
     
-    /*Giver function */
     
-    function addFund(uint amount, string reason) {
+    /*Giver function*/////////////////////////////////////////////////////////
+    function addFund(uint24 amount, string reason) {
         giver.funds.push( Fund({amount: amount, reason: reason}) );
         giver.fundStatus.push(FundStatus.Removed);
         
         giver.budget += amount;
     }
     
-    function deleteFund(uint fundIndex) {
+    function deleteFund(uint24 fundIndex) {
         if (fundIndex >= giver.funds.length || 
             giver.fundStatus[fundIndex] == FundStatus.Removed) return;
         
@@ -194,7 +190,7 @@ contract BlockBook {
         giver.fundStatus[fundIndex] = FundStatus.Removed;
     }
     
-    function changeRequestStatus(address targetAddress, uint requestIndex,
+    function changeRequestStatus(address targetAddress, uint24 requestIndex,
     RequestStatus toStatus) onlyGiver onlyTargetBeggar(targetAddress) returns (bool)
     {
         if (requestIndex >= beggars[targetAddress].requests.length) return false;
@@ -263,15 +259,34 @@ contract BlockBook {
         return false;
     }
 
-	/*Admin Getter*/
+    /*Admin & Giver function*////////////////////////////////////////////////
+    function voteDelete(address targetAddress, bool vote)
+        onlyTargetBeggar(targetAddress) returns (bool)
+    {
+        if (msg.sender == admin)  
+            beggars[targetAddress].removeVote.adminVote = vote;
+        else if (msg.sender == giver.addr)  
+            beggars[targetAddress].removeVote.giverVote = vote;
+            
+        if (beggars[targetAddress].removeVote.adminVote 
+            && beggars[targetAddress].removeVote.giverVote) {
+            beggarAddresses[beggars[targetAddress].addressIndex] = 0;
+            isBeggar[targetAddress] = false;
+            return true;
+        }
+        else
+            return false;
+    }
+    
+    
+	/*Admin Getter*/////////////////////////////////////////////////////////
 	function getBeggars() constant returns (address[]) {
 	   return beggarAddresses;
 	}
 	
-	
-	/*Beggar Getter*/ 
+	/*Beggar Getter*/////////////////////////////////////////////////////////
 	function getBeggar(address targetAddress) onlyTargetBeggar(targetAddress)
-	    constant returns (string, uint, uint, uint, uint) 
+	    constant returns (string, uint24, uint24, uint24, uint24) 
     {
         return (beggars[targetAddress].name, 
 		        beggars[targetAddress].addressIndex,
@@ -287,8 +302,8 @@ contract BlockBook {
 	            beggars[targetAddress].removeVote.adminVote);
 	}
     
-	function getRequest(address targetAddress, uint requestIndex) onlyTargetBeggar(targetAddress) 
-	    constant returns (uint, string, string, uint)   
+	function getRequest(address targetAddress, uint24 requestIndex) onlyTargetBeggar(targetAddress) 
+	    constant returns (uint24, string, string, uint)   
     {
         if (requestIndex >= beggars[targetAddress].requests.length) return;
         
@@ -304,8 +319,8 @@ contract BlockBook {
        return beggars[targetAddress].requestStatus;
     }
 	    
-    /*Giver Getter*/ 
-	function getGiver() constant returns (address, string, uint, uint, uint) {
+    /*Giver Getter*/////////////////////////////////////////////////////////
+	function getGiver() constant returns (address, string, uint24, uint24, uint24) {
 	    return (giver.addr, 
 	            giver.name, 
                 giver.budget, 
