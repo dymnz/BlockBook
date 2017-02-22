@@ -3,23 +3,40 @@
   1. Assign Giver/Beggar status
  
 #### 2. Giver:
-  1. Pay request
+  1. Change Request status
+  ```
+  Allowed changes:
+  "Pending Approval" -> "Approved"  
+  "Approved" -> "Paid"
+  "Disputed" -> "Approved"
+  "Disputed" -> "Paid"
+  ```
   2. Add fund
   `Budget += Fund`
   3. Delete fund 
   `Budget -= Fund`
   
-  4. Edit requst, if the request is "Disputed"
 
 #### 3. Beggar:
   1. Add a request
+  `addRequest(uint Amount, string Reason, string URL)`
   2. Delete a request, only request start by Beggar himself
+  `removeRequest(uint RequestID)`
   3. Dispute a request
+  ```
+  disputeRequest(uint RequestID)
+
+  Allowed change:
+  "Paid" -> "Disputed"
+  ```
   
 #### 4. UI:
-  1. List all requests 
+  1. List requests 
+  `getRequests(enum Status ofStatus)`
   2. List funds
+  `getFunds()`
   3. Show budget
+  `getBudget()`
 
 
 ### UI Function
@@ -48,24 +65,25 @@
       
 ### Data Structure
 1. Request
+#### Every Request is associated with a RequestID. The RequestID is the index of a Request in a Beggar's Request array
   * Amount
   * Reason
   * Photo of the receipt
-    1. Google Drive link
-    2. Swarm-FUTURE
-  * Deadline, if beggar wish to have
+    1. Google Drive link (Limit length, use goo.gl to shrink the URL)
+    2. FUTURE - Swarm
   * Status enum{"Pending Approval", "Approved", "Paid", "Disputed"}
+  * Deadline, if Beggar wish to have <- Discarded in first proto
 2. Fund
   * Amount
   * Reason
 3. Account
   * Address
   * Role
-  * Paid requests
-  * Unpain requests
+  * Paid Requests
+
   
 ### Storage Structure
-1. Requests are stored in two arrays associated with an Account
+1. Each Beggar's Requests is stored in an array under the Beggar's Account
   
 ### Vocabulary
 * Budget: The sum of all funds
