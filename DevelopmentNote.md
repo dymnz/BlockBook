@@ -11,6 +11,7 @@
 
   Allowed changes:
   "Pending Approval" -> "Approved"  
+  "Pending Approval" -> "Paid"  
   "Approved" -> "Paid"
   "Disputed" -> "Approved"
   "Disputed" -> "Paid"

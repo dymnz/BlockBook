@@ -20,6 +20,7 @@ contract BlockBook {
 	// 	return balances[addr];
 	// }
 	enum AccountRole { Admin, Giver, Beggar }
+	enum FundStatus { Active, Removed }
 	enum RequestStatus { PendingApproval, Approved, Paid, Disputed, Removed }
 
 
@@ -44,12 +45,16 @@ contract BlockBook {
 		address addr;
 		string name;
 		uint budget;
+		uint approved;
+		uint paid;
 		Fund[] funds;
+		FundStatus[] fundStatus;
 	}
 	struct Beggar {
 		string name;
 		uint addressIndex;
 		uint requested;
+		uint approved;
 		uint paid;
 		Request[] requests;
         RequestStatus[] requestStatus;		
@@ -67,6 +72,12 @@ contract BlockBook {
     /*Modifier*/
     modifier onlyAdmin {
         if ( msg.sender != admin )
+            return;
+        _;
+    }
+    
+    modifier onlyGiver {
+        if ( msg.sender != giver.addr )
             return;
         _;
     }
@@ -94,6 +105,7 @@ contract BlockBook {
 	    
 	    // FOR TESTING
 	    addBeggar(msg.sender, "admin");
+	    giver.addr = msg.sender;
 	}
     
     function addBeggar(address targetAddress, string name) onlyAdmin {
@@ -129,48 +141,161 @@ contract BlockBook {
         beggars[msg.sender].requested += amount;
     }
     
+    function disputeRequest(uint requestIndex) onlyBeggar returns (bool) {
+        if (requestIndex >= beggars[msg.sender].requests.length) return false;
+        
+        if (beggars[msg.sender].requestStatus[requestIndex] == RequestStatus.Paid) {
+            beggars[msg.sender].requestStatus[requestIndex] = RequestStatus.Disputed;
+            return true;
+        }
+    }
+    
+    function removeRequest(uint requestIndex) onlyBeggar returns (bool) {
+        if (requestIndex >= beggars[msg.sender].requests.length) return false;
+       
+        if (beggars[msg.sender].requestStatus[requestIndex] == RequestStatus.Paid ||
+            beggars[msg.sender].requestStatus[requestIndex] == RequestStatus.Disputed) 
+            return false;
+        
+        if (beggars[msg.sender].requestStatus[requestIndex] 
+            == RequestStatus.PendingApproval) {
+            beggars[msg.sender].requestStatus[requestIndex] 
+                = RequestStatus.Removed;
+            return true;
+        }
+        
+        if (beggars[msg.sender].requestStatus[requestIndex] 
+            == RequestStatus.Approved) {
+            beggars[msg.sender].requestStatus[requestIndex] 
+                = RequestStatus.Removed;
+            beggars[msg.sender].approved 
+                -= beggars[msg.sender].requests[requestIndex].amount;                
+            giver.approved 
+                -= beggars[msg.sender].requests[requestIndex].amount;                
+            return true;
+        }        
+        
+    }
+    
     /*Giver function */
     
+    function addFund(uint amount, string reason) {
+        giver.funds.push( Fund({amount: amount, reason: reason}) );
+        giver.fundStatus.push(FundStatus.Removed);
+        
+        giver.budget += amount;
+    }
+    
+    function deleteFund(uint fundIndex) {
+        if (fundIndex >= giver.funds.length || 
+            giver.fundStatus[fundIndex] == FundStatus.Removed) return;
+        
+        giver.budget -= giver.funds[fundIndex].amount;
+        giver.fundStatus[fundIndex] = FundStatus.Removed;
+    }
+    
+    function changeRequestStatus(address targetAddress, uint requestIndex,
+    RequestStatus toStatus) onlyGiver onlyTargetBeggar(targetAddress) returns (bool)
+    {
+        if (requestIndex >= beggars[targetAddress].requests.length) return false;
+        
+        // "PendingApproval" -> "Approved" or "Paid"
+        if (beggars[targetAddress].requestStatus[requestIndex] 
+            == RequestStatus.PendingApproval) {
+            if (toStatus == RequestStatus.Approved) {
+                beggars[targetAddress].requestStatus[requestIndex] 
+                    = RequestStatus.Approved;
+                beggars[targetAddress].approved 
+                    += beggars[targetAddress].requests[requestIndex].amount;                       
+                giver.approved 
+                    += beggars[targetAddress].requests[requestIndex].amount;
+            } else if (toStatus == RequestStatus.Paid) {
+                beggars[targetAddress].requestStatus[requestIndex] 
+                    = RequestStatus.Paid;
+                beggars[targetAddress].paid 
+                    += beggars[targetAddress].requests[requestIndex].amount;
+                giver.paid 
+                    += beggars[targetAddress].requests[requestIndex].amount;                                    
+            } else {
+                return false;
+            }
+            return true;
+        } 
+        // "Approved" -> "Paid"
+        else if (beggars[targetAddress].requestStatus[requestIndex] 
+            == RequestStatus.Approved) {
+            if (toStatus == RequestStatus.Paid) {
+                beggars[targetAddress].requestStatus[requestIndex] 
+                    = RequestStatus.Paid;
+                beggars[targetAddress].approved 
+                    -= beggars[targetAddress].requests[requestIndex].amount;                     
+                beggars[targetAddress].paid  
+                    += beggars[targetAddress].requests[requestIndex].amount;
+                giver.approved 
+                    -= beggars[targetAddress].requests[requestIndex].amount;                     
+                giver.paid 
+                    += beggars[targetAddress].requests[requestIndex].amount;                     
+            } else {
+                return false;
+            }
+            return true;
+        }
+        // "Disputed" -> "Approved" or "Paid"
+        else if  (beggars[targetAddress].requestStatus[requestIndex] 
+            == RequestStatus.Disputed) {
+            if (toStatus == RequestStatus.Paid) {
+                beggars[targetAddress].requestStatus[requestIndex] 
+                    = RequestStatus.Paid;
+            } else if (toStatus == RequestStatus.Approved) {
+                beggars[targetAddress].requestStatus[requestIndex] 
+                    = RequestStatus.Paid;
+                beggars[targetAddress].approved 
+                    += beggars[targetAddress].requests[requestIndex].amount;                     
+                beggars[targetAddress].paid  
+                    -= beggars[targetAddress].requests[requestIndex].amount;
+                giver.approved 
+                    += beggars[targetAddress].requests[requestIndex].amount;                    
+                giver.paid 
+                    -= beggars[targetAddress].requests[requestIndex].amount; 
+            }
+        }
 
-	/*Getter*/
+        return false;
+    }
+
+	/*Admin Getter*/
 	function getBeggars() constant returns (address[]) {
 	   return beggarAddresses;
 	}
 	
-	function getRequstedAmount(address targetAddress) onlyTargetBeggar(targetAddress)
-	    constant returns (uint) 
-    {
-	    return beggars[targetAddress].requested;
-	}
 	
-	function getPaidAmount(address targetAddress) onlyTargetBeggar(targetAddress) 
-	    constant returns (uint) 
+	/*Beggar Getter*/ 
+	function getBeggar(address targetAddress) onlyTargetBeggar(targetAddress)
+	    constant returns (string, uint, uint, uint, uint) 
     {
-	    return beggars[targetAddress].paid;
-	}
-	
-	function getName(address targetAddress) onlyTargetBeggar(targetAddress) 
-	    constant returns (string)   
-    {
-	    return beggars[targetAddress].name;
-	}	
-	
+        return (beggars[targetAddress].name, 
+		        beggars[targetAddress].addressIndex,
+		        beggars[targetAddress].requested,
+		        beggars[targetAddress].approved,
+		        beggars[targetAddress].paid);
+    }
+    
 	function getRemoveVote(address targetAddress) onlyTargetBeggar(targetAddress) 
 	    constant returns (bool, bool)   
     {
 	    return (beggars[targetAddress].removeVote.giverVote, 
-	        beggars[targetAddress].removeVote.adminVote);
+	            beggars[targetAddress].removeVote.adminVote);
 	}
     
-	function getRequest(address targetAddress, uint index) onlyTargetBeggar(targetAddress) 
+	function getRequest(address targetAddress, uint requestIndex) onlyTargetBeggar(targetAddress) 
 	    constant returns (uint, string, string, uint)   
     {
-        if (index >= beggars[targetAddress].requests.length) return;
+        if (requestIndex >= beggars[targetAddress].requests.length) return;
         
-        return (beggars[targetAddress].requests[index].amount,
-		beggars[targetAddress].requests[index].reason,
-		beggars[targetAddress].requests[index].receiptURL,
-		beggars[targetAddress].requests[index].createdOn);
+        return (beggars[targetAddress].requests[requestIndex].amount,
+	        	beggars[targetAddress].requests[requestIndex].reason,
+		        beggars[targetAddress].requests[requestIndex].receiptURL,
+		        beggars[targetAddress].requests[requestIndex].createdOn);
 	}
 	
 	function listRequestStatus(address targetAddress) onlyTargetBeggar(targetAddress) 
@@ -179,5 +304,17 @@ contract BlockBook {
        return beggars[targetAddress].requestStatus;
     }
 	    
-
+    /*Giver Getter*/ 
+	function getGiver() constant returns (address, string, uint, uint, uint) {
+	    return (giver.addr, 
+	            giver.name, 
+                giver.budget, 
+                giver.approved, 
+                giver.paid);
+	}
+	
+	function listFundStatus() constant returns (FundStatus[])
+    {
+       return giver.fundStatus;
+    }	
 }
