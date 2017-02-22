@@ -1,6 +1,6 @@
 
-# Setup
-## TestRPC Setup
+## Setup
+### TestRPC Setup
 ```
 $ install nodejs/npm
 $ apt-get install build-essential python
@@ -9,7 +9,7 @@ $ npm install web3 -g
 $ testrpc -u 0
 ```
 
-## Truffle Setup
+### Truffle Setup
 ```
 $ npm install webpack -g
 $ npm install truffle -g
@@ -18,7 +18,7 @@ $ truffle compile
 $ truffle migrate
 ```
 
-## After Pulling
+### After Pulling
 ```
 $ npm install
 $ truffle compile
