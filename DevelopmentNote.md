@@ -5,13 +5,10 @@
 #### 2. Giver:
   1. Pay request
   2. Add fund
-  '''
-  Budget += Fund
-  '''
+  `Budget += Fund`
   3. Delete fund 
-  '
-  Budget -= Fund
-  '
+  `Budget -= Fund`
+  
   4. Edit requst, if the request is "Disputed"
 
 #### 3. Beggar:
