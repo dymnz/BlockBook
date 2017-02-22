@@ -4,6 +4,7 @@
  
 #### 2. Giver:
   1. Change Request status
+
   ```
   Allowed changes:
   "Pending Approval" -> "Approved"  
@@ -11,18 +12,27 @@
   "Disputed" -> "Approved"
   "Disputed" -> "Paid"
   ```
+
   2. Add fund
+  
   `Budget += Fund`
+
   3. Delete fund 
+  
   `Budget -= Fund`
   
 
 #### 3. Beggar:
   1. Add a request
+  
   `addRequest(uint Amount, string Reason, string URL)`
+
   2. Delete a request, only request start by Beggar himself
+  
   `removeRequest(uint RequestID)`
+
   3. Dispute a request
+  
   ```
   disputeRequest(uint RequestID)
 
@@ -30,12 +40,18 @@
   "Paid" -> "Disputed"
   ```
   
+
 #### 4. UI:
   1. List requests 
+  
   `getRequests(enum Status ofStatus)`
+
   2. List funds
+  
   `getFunds()`
+
   3. Show budget
+  
   `getBudget()`
 
 
@@ -54,7 +70,7 @@
   3. Dispute
   	1. Edit requests
   
-####3. Beggar:
+#### 3. Beggar:
   1. Request
     1. List requests
       1. Unpaid
@@ -65,7 +81,7 @@
       
 ### Data Structure
 1. Request
-#### Every Request is associated with a RequestID. The RequestID is the index of a Request in a Beggar's Request array
+ **Every Request is associated with a RequestID. The RequestID is the index of a Request in a Beggar's Request array**
   * Amount
   * Reason
   * Photo of the receipt
