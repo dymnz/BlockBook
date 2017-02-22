@@ -4,8 +4,15 @@
  
 #### 2. Giver:
   1. Pay request
-  2. Add fund - Budget += Fund.amount
-  3. Edit requst, if the request is "Disputed"
+  2. Add fund
+  '''
+  Budget += Fund
+  '''
+  3. Delete fund 
+  '
+  Budget -= Fund
+  '
+  4. Edit requst, if the request is "Disputed"
 
 #### 3. Beggar:
   1. Add a request
@@ -18,7 +25,6 @@
   3. Show budget
 
 
-
 ### UI Function
 #### 1. Admin: 
   NO UI required for Admin, contract functions are invoked from console.
@@ -27,6 +33,7 @@
   1. Budget
   	1. Paid requests
   	2. Add fund
+    3. Delete fund
   2. Check pending requests
     1. Sort by deadline/time
     2. Pay requests
@@ -50,7 +57,7 @@
     1. Google Drive link
     2. Swarm-FUTURE
   * Deadline, if beggar wish to have
-  * Status enum{"Unpaid", "Paid", "Disputed"}
+  * Status enum{"Pending Approval", "Approved", "Paid", "Disputed"}
 2. Fund
   * Amount
   * Reason
@@ -61,7 +68,7 @@
   * Unpain requests
   
 ### Storage Structure
-
+1. Requests are stored in two arrays associated with an Account
   
 ### Vocabulary
 * Budget: The sum of all funds
