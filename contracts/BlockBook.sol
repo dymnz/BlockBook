@@ -175,14 +175,14 @@ contract BlockBook {
     
     
     /*Giver function*/////////////////////////////////////////////////////////
-    function addFund(uint24 amount, string reason) {
+    function addFund(uint24 amount, string reason) onlyGiver {
         giver.funds.push( Fund({amount: amount, reason: reason}) );
         giver.fundStatus.push(FundStatus.Removed);
         
         giver.budget += amount;
     }
     
-    function deleteFund(uint24 fundIndex) {
+    function deleteFund(uint24 fundIndex) onlyGiver {
         if (fundIndex >= giver.funds.length || 
             giver.fundStatus[fundIndex] == FundStatus.Removed) return;
         
