@@ -1,11 +1,11 @@
 ## TestRPC Setup
-'''
+```
 	install nodejs/npm
 	apt-get install build-essential python
 	npm install ethereumjs-testrpc -g
 	npm install web3 -g
 	testrpc -u 0
-'''
+```
 
 
 
