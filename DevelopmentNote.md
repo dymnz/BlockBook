@@ -1,11 +1,13 @@
 ### Contract Function
 #### 1. Admin:
-  1. Assign Giver/Beggar status
- 
+  1. Assign Giver/Beggar role to an address
+ `assignRole(enum Role role, address toAddress)`
 #### 2. Giver:
   1. Change Request status
 
   ```
+  changeRequestStatus(address ofAddress, uint RequestID, enum Status toStatus)
+
   Allowed changes:
   "Pending Approval" -> "Approved"  
   "Approved" -> "Paid"
@@ -24,7 +26,7 @@
   1. Add a request
   `addRequest(uint Amount, string Reason, string URL)`
 
-  2. Delete a request, only request start by Beggar himself  
+  2. Delete a request
   `removeRequest(uint RequestID)`
 
   3. Dispute a request
@@ -39,7 +41,7 @@
 
 #### 4. UI:
   1. List requests 
-  `getRequests(enum Status ofStatus)`
+  `getRequests(enum Status ofStatus, address ofAddress)`
 
   2. List funds  
   `getFunds()`
@@ -80,13 +82,14 @@
     1. Google Drive link (Limit length, use goo.gl to shrink the URL)
     2. FUTURE - Swarm
   * Status enum{"Pending Approval", "Approved", "Paid", "Disputed"}
-  * Deadline, if Beggar wish to have <- Discarded in first proto
+  * ~~Deadline, if Beggar wish to have <- Discarded in first proto~~
   
 **Every Request is associated with a RequestID. The RequestID is the index of a Request in a Beggar's Request array**
 
 * Fund
   * Amount
   * Reason
+**Every Fund is associated with a FundID. The FundID is the index of a Fund in a Giver's Fund array**  
 * Account
   * Address
   * Role
@@ -94,7 +97,8 @@
 
   
 ### Storage Structure
-1. Each Beggar's Requests is stored in an array under the Beggar's Account
+* A Beggar's Requests is stored in an array under the Beggar's Account
+
   
 ### Vocabulary
 * Budget: The sum of all funds
