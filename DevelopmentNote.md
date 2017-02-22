@@ -14,21 +14,17 @@
   ```
 
   2. Add fund
-  
-  `Budget += Fund`
+  `addFund(uint Amount, string Reason)`
 
   3. Delete fund 
-  
-  `Budget -= Fund`
+  `deleteFund(uint FundID)`
   
 
 #### 3. Beggar:
   1. Add a request
-  
   `addRequest(uint Amount, string Reason, string URL)`
 
-  2. Delete a request, only request start by Beggar himself
-  
+  2. Delete a request, only request start by Beggar himself  
   `removeRequest(uint RequestID)`
 
   3. Dispute a request
@@ -43,15 +39,12 @@
 
 #### 4. UI:
   1. List requests 
-  
   `getRequests(enum Status ofStatus)`
 
-  2. List funds
-  
+  2. List funds  
   `getFunds()`
 
   3. Show budget
-  
   `getBudget()`
 
 
@@ -80,8 +73,7 @@
     2. Add request
       
 ### Data Structure
-1. Request
- **Every Request is associated with a RequestID. The RequestID is the index of a Request in a Beggar's Request array**
+* Request 
   * Amount
   * Reason
   * Photo of the receipt
@@ -89,10 +81,13 @@
     2. FUTURE - Swarm
   * Status enum{"Pending Approval", "Approved", "Paid", "Disputed"}
   * Deadline, if Beggar wish to have <- Discarded in first proto
-2. Fund
+  
+**Every Request is associated with a RequestID. The RequestID is the index of a Request in a Beggar's Request array**
+
+* Fund
   * Amount
   * Reason
-3. Account
+* Account
   * Address
   * Role
   * Paid Requests
