@@ -1,18 +1,15 @@
-Ethereum - TestRPC
-
-1. install nodejs/npm
-
-2. apt-get install build-essential python
-
-3. npm install ethereumjs-testrpc -g
-
-4. npm install web3 -g
-
-5. testrpc -u 0
+## TestRPC Setup
+'''
+	install nodejs/npm
+	apt-get install build-essential python
+	npm install ethereumjs-testrpc -g
+	npm install web3 -g
+	testrpc -u 0
+'''
 
 
 
-Truffle
+## Truffle Setup
 
 1. npm install webpack -g
 
@@ -25,7 +22,7 @@ Truffle
 5. truffle migrate
 
 
-Sync
+## After Pulling
 
 1. npm install
 
