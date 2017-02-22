@@ -95,6 +95,15 @@ contract BlockBook {
     }
     
     
+    /*Events*/
+    event NewRequest(address indexed _beggarAddress, uint24 _requestIndex);
+    event NewRemove(address indexed _beggarAddress, uint24 _requestIndex);
+    event NewDispute(address indexed _beggarAddress, uint24 _requestIndex);
+    event NewApproval(address indexed _beggarAddress, uint24 _requestIndex);
+    event NewPaid(address indexed _beggarAddress, uint24 _requestIndex);
+    event DisputeResolved(address indexed _beggarAddress, uint24 _requestIndex);
+    event RoleUpdate(address indexed _from, address indexed _to, AccountRole indexed _role);
+
 	/*Admin function*/////////////////////////////////////////////////////////
 	function BlockBook() {
 	    admin = msg.sender;
@@ -114,15 +123,21 @@ contract BlockBook {
         beggarAddresses.push(targetAddress);
 
         isBeggar[targetAddress] = true;
+
+        RoleUpdate(msg.sender, targetAddress, AccountRole.Beggar);
     }
     
     function setGiver(address targetAddress, string name) onlyAdmin {
         giver.addr = targetAddress;
         giver.name = name;
+
+        RoleUpdate(msg.sender, targetAddress, AccountRole.Giver);
     }
     
     function transferAdmin(address targetAddress) onlyAdmin {
         admin = targetAddress;
+
+        RoleUpdate(msg.sender, targetAddress, AccountRole.Admin);
     }
 
     /*Beggar function*/////////////////////////////////////////////////////////
@@ -135,6 +150,8 @@ contract BlockBook {
         }) );
         beggars[msg.sender].requestStatus.push( RequestStatus.PendingApproval );
         beggars[msg.sender].requested += amount;
+
+        NewRequest(msg.sender, uint24(beggars[msg.sender].requestStatus.length) - 1);
     }
     
     function disputeRequest(uint requestIndex) onlyBeggar returns (bool) {
@@ -143,7 +160,9 @@ contract BlockBook {
         if (beggars[msg.sender].requestStatus[requestIndex] == RequestStatus.Paid) {
             beggars[msg.sender].requestStatus[requestIndex] = RequestStatus.Disputed;
             return true;
+            NewDispute(msg.sender, uint24(requestIndex));
         }
+        
     }
     
     function removeRequest(uint requestIndex) onlyBeggar returns (bool) {
@@ -158,6 +177,7 @@ contract BlockBook {
             beggars[msg.sender].requestStatus[requestIndex] 
                 = RequestStatus.Removed;
             return true;
+            NewRemove(msg.sender, uint24(requestIndex) );
         }
         
         if (beggars[msg.sender].requestStatus[requestIndex] 
@@ -169,6 +189,7 @@ contract BlockBook {
             giver.approved 
                 -= beggars[msg.sender].requests[requestIndex].amount;                
             return true;
+            NewRemove(msg.sender, uint24(requestIndex) );
         }        
         
     }
@@ -205,13 +226,17 @@ contract BlockBook {
                     += beggars[targetAddress].requests[requestIndex].amount;                       
                 giver.approved 
                     += beggars[targetAddress].requests[requestIndex].amount;
+				NewApproval(targetAddress, requestIndex);  
+
             } else if (toStatus == RequestStatus.Paid) {
                 beggars[targetAddress].requestStatus[requestIndex] 
                     = RequestStatus.Paid;
                 beggars[targetAddress].paid 
                     += beggars[targetAddress].requests[requestIndex].amount;
                 giver.paid 
-                    += beggars[targetAddress].requests[requestIndex].amount;                                    
+                    += beggars[targetAddress].requests[requestIndex].amount; 
+				NewPaid(targetAddress, requestIndex);
+
             } else {
                 return false;
             }
@@ -231,6 +256,7 @@ contract BlockBook {
                     -= beggars[targetAddress].requests[requestIndex].amount;                     
                 giver.paid 
                     += beggars[targetAddress].requests[requestIndex].amount;                     
+				NewPaid(targetAddress, requestIndex);                    
             } else {
                 return false;
             }
@@ -242,6 +268,8 @@ contract BlockBook {
             if (toStatus == RequestStatus.Paid) {
                 beggars[targetAddress].requestStatus[requestIndex] 
                     = RequestStatus.Paid;
+				DisputeResolved(targetAddress, requestIndex);
+
             } else if (toStatus == RequestStatus.Approved) {
                 beggars[targetAddress].requestStatus[requestIndex] 
                     = RequestStatus.Paid;
@@ -253,7 +281,12 @@ contract BlockBook {
                     += beggars[targetAddress].requests[requestIndex].amount;                    
                 giver.paid 
                     -= beggars[targetAddress].requests[requestIndex].amount; 
+				DisputeResolved(targetAddress, requestIndex); 
+
+            } else {
+            	return false;
             }
+            return true;
         }
 
         return false;
