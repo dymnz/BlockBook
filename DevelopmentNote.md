@@ -1,7 +1,7 @@
 ### Contract Function
 #### 1. Admin:
   1. Assign Giver/Beggar role to an address
- `assignRole(enum Role role, address toAddress)`
+  `assignRole(enum Role role, address toAddress)`
 #### 2. Giver:
   1. Change Request status
 
@@ -29,7 +29,7 @@
   2. Delete a request
   `removeRequest(uint RequestID)`
 
-  3. Dispute a request
+  3. Dispute a request 
   
   ```
   disputeRequest(uint RequestID)
@@ -40,10 +40,10 @@
   
 
 #### 4. UI:
-  1. List requests 
+  1. List requests
   `getRequests(enum Status ofStatus, address ofAddress)`
 
-  2. List funds  
+  2. List funds
   `getFunds()`
 
   3. Show budget
@@ -82,7 +82,7 @@
     1. Google Drive link (Limit length, use goo.gl to shrink the URL)
     2. FUTURE - Swarm
   * Status enum{"Pending Approval", "Approved", "Paid", "Disputed"}
-  * ~~Deadline, if Beggar wish to have <- Discarded in first proto~~
+  * ~~Deadline, if Beggar wish to have~~ (Discarded in first proto)
   
 **Every Request is associated with a RequestID. The RequestID is the index of a Request in a Beggar's Request array**
 
