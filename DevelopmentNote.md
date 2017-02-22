@@ -2,6 +2,7 @@
 #### 1. Admin:
   1. Assign Giver/Beggar role to an address
   `assignRole(enum Role role, address toAddress)`
+  
 #### 2. Giver:
   1. Change Request status
 
