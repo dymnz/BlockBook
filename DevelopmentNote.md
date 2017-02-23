@@ -40,7 +40,7 @@
   3. Dispute a request 
   `disputeRequest(uint requestIndex)`
     
-    
+
   ```
   Allowed change:
   "Paid" -> "Disputed"
@@ -52,24 +52,26 @@
 
 #### 5. UI:
 * Beggar
-  1. Get the list of Beggar's addess
-  `getBeggars()`
-  2. Get a Beggar's data structure
-  `getBeggarInfo(address targetAddress)`
-  3. Get a Beggar's remove voting status
-  `getRemoveVote(address targetAddress)`
-  4. Get a Request's data structure
-  `getRequestInfo(address targetAddress, uint24 requestIndex)`    
-  5. Get the list of a Beggar's request status
-  `listRequestStatus(address targetAddress)`
+
+1. Get the list of Beggar's addess
+`getBeggars()`
+2. Get a Beggar's data structure
+`getBeggarInfo(address targetAddress)`
+3. Get a Beggar's remove voting status
+`getRemoveVote(address targetAddress)`
+4. Get a Request's data structure
+`getRequestInfo(address targetAddress, uint24 requestIndex)`    
+5. Get the list of a Beggar's request status
+`listRequestStatus(address targetAddress)`
 
 * Giver
-  1. Get Giver's data structure
-  `getGiver()`
-  2. Get a Funds' data structure
-  `getFundInfo(uint24 fundIndex)`
-  3. Get the list of Giver's fund status
-  `listFundStatus()`
+
+1. Get Giver's data structure
+`getGiver()`
+2. Get a Funds' data structure
+`getFundInfo(uint24 fundIndex)`
+3. Get the list of Giver's fund status
+`listFundStatus()`
 
 
 ### UI Function
