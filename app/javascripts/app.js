@@ -18,6 +18,20 @@ var beggarTableRows = [];
 window.App = {
   start: function() {
     ContractFunctions.initContract(contract(blockBook_artifacts), web3);
+
+    ContractFunctions.roleUpdateEvent().then( function(event){
+      event.watch(function(err, result){
+       console.log("roleUpdateEvent: " + result);
+      })
+    }).catch(function(e) {
+      throw e;
+    });  
+
+    
+    // ContractFunctions.roleUpdateEvent().watch(function(err, result){
+    //   console.log(result);
+    // });
+    
   },
 
   // setStatus: function(message) {
@@ -33,8 +47,8 @@ window.App = {
   listBalance: function () {
     var self = this;
   },
-  resetBeggarTable: function (count) {
 
+  resetBeggarTable: function (count) {
       var table = document.getElementById("beggarTable");
       // Remove table
       table.innerHTML = "";
@@ -68,7 +82,21 @@ window.App = {
       })
       console.log(addresses);
     });   
+  },
+
+
+  addBeggarTest: function () {
+    var self = this;
+
+    ContractFunctions.addBeggar("0x064F1936e852Cf40CAF87731168b2095735A2CC8", "hi").then(function(result) {
+      console.log(result);
+      self.refreshBeggarList();
+      
+    }).catch(function(e) {
+      console.log(e);
+    });
   }
+
 };
 
 window.addEventListener('load', function() {
