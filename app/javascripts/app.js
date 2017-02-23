@@ -33,9 +33,21 @@ window.App = {
   listBalance: function () {
     var self = this;
   },
-  constructBeggarTable: function (count) {
-      // Construct balance table
+  resetBeggarTable: function (count) {
+
       var table = document.getElementById("beggarTable");
+      // Remove table
+      table.innerHTML = "";
+
+      // Add title
+      var row = table.insertRow(0);  
+      var cell1 = row.insertCell(0);
+      var cell2 = row.insertCell(1);
+      cell1.innerHTML = "Address";
+      cell2.innerHTML = "Balance";
+      cell2.setAttribute("align", "right");
+
+      // Construct table
       for (var i = 0 ; i < count; i++)
       {
         beggarTableRows[i] = table.insertRow(-1);   
@@ -48,19 +60,14 @@ window.App = {
 
   refreshBeggarList: function () {
     var self = this;
-    ContractFunctions.getBeggarList().then(function(result) {
-      console.log("2");
-      console.log(result);
-      });
-    // ContractFunctions.getBeggarList().then(function(value) {
-    //     console.log(value);
-    //     self.constructBeggarTable(value.length);
-    //     value.forEach(function(account, index){
-    //       beggarTableRows[index].cells[0].innerHTML = account;
-    //     })        
-    //   }).catch(function(e) {
-    //     console.log(e);
-    // });    
+
+    ContractFunctions.getBeggarList().then(function(addresses) {
+      self.resetBeggarTable(addresses.length);
+      addresses.forEach(function(address, index){
+        beggarTableRows[index].cells[0].innerHTML = address;
+      })
+      console.log(addresses);
+    });   
   }
 };
 
