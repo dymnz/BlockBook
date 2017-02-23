@@ -17,21 +17,13 @@ var beggarTableRows = [];
 
 window.App = {
   start: function() {
-    ContractFunctions.initContract(contract(blockBook_artifacts), web3);
+    var self = this;
 
-    ContractFunctions.roleUpdateEvent().then( function(event){
-      event.watch(function(err, result){
-       console.log("roleUpdateEvent: " + result);
-      })
-    }).catch(function(e) {
-      throw e;
-    });  
+    ContractFunctions.initContract
+    (contract(blockBook_artifacts), web3);
 
-    
-    // ContractFunctions.roleUpdateEvent().watch(function(err, result){
-    //   console.log(result);
-    // });
-    
+    self.refreshBeggarList();
+    self.addEventListener();    
   },
 
   // setStatus: function(message) {
@@ -39,63 +31,139 @@ window.App = {
   //   status.innerHTML = message;
   // },
 
-  refreshBalance: function() {
-    this.listBalance();
-  },
-
-  // Get balance in each account and update
-  listBalance: function () {
-    var self = this;
-  },
-
   resetBeggarTable: function (count) {
       var table = document.getElementById("beggarTable");
       // Remove table
-      table.innerHTML = "";
+      table.innerHTML = `        
+      <tr class=tableTitle>
+            <td>Name</td>
+            <td>Requested</td>
+            <td>Approved</td>
+            <td>Paid</td>
+        </tr>`;
 
-      // Add title
-      var row = table.insertRow(0);  
-      var cell1 = row.insertCell(0);
-      var cell2 = row.insertCell(1);
-      cell1.innerHTML = "Address";
-      cell2.innerHTML = "Balance";
-      cell2.setAttribute("align", "right");
+
+      var alignRight = [0, 1, 1, 1];  
 
       // Construct table
-      for (var i = 0 ; i < count; i++)
+      for (var r = 0 ; r < count; r++)
       {
-        beggarTableRows[i] = table.insertRow(-1);   
-        beggarTableRows[i].insertCell(0);
-        beggarTableRows[i].insertCell(1);
+        beggarTableRows[r] = table.insertRow(-1);   
 
-        beggarTableRows[i].cells[1].setAttribute("align", "right");
+        for (var c = 0 ; c < 4 ; c++)
+        {
+          beggarTableRows[r].insertCell(-1); 
+          if (alignRight[c]){
+            beggarTableRows[r].cells[c].setAttribute('align', 'right');
+          }
+        }
       }
   },
 
   refreshBeggarList: function () {
     var self = this;
 
-    ContractFunctions.getBeggarList().then(function(addresses) {
+    ContractFunctions.getBeggarAddress().then(function(addresses) {
       self.resetBeggarTable(addresses.length);
       addresses.forEach(function(address, index){
-        beggarTableRows[index].cells[0].innerHTML = address;
+        ContractFunctions.refreshBeggarInfo(address).then(function(beggar) {
+          beggarTableRows[index].cells[0].innerHTML = beggar.name;  
+          beggarTableRows[index].cells[1].innerHTML = beggar.requested;  
+          beggarTableRows[index].cells[2].innerHTML = beggar.approved;  
+          beggarTableRows[index].cells[3].innerHTML = beggar.paid;            
+        });
       })
       console.log(addresses);
     });   
   },
 
-
-  addBeggarTest: function () {
-    var self = this;
-
-    ContractFunctions.addBeggar("0x064F1936e852Cf40CAF87731168b2095735A2CC8", "hi").then(function(result) {
+  addBeggar: function (address, name) {    
+    ContractFunctions.addBeggar(address, name).then(function(result) {
       console.log(result);
-      self.refreshBeggarList();
-      
     }).catch(function(e) {
       console.log(e);
     });
+  },
+
+  addRequest: function (amount, reason, receiptURL) {
+    ContractFunctions.addRequest(amount, reason, receiptURL).then(function(result) {
+      console.log(result);
+    }).catch(function(e) {
+      console.log(e);
+    });
+  },
+
+  changeRequestStatus: function (targetAddress, requestIndex, toStatus)  
+  {
+    ContractFunctions.changeRequestStatus(targetAddress, requestIndex, 
+      toStatus).then(function(result) {
+      console.log(result);
+    }).catch(function(e) {
+      console.log(e);
+    });
+  },
+  
+  addEventListener: function () {
+    var self = this;
+
+    // RoleUpdate event
+    ContractFunctions.roleUpdateEvent().then( function(event){
+      event.watch(function(err, result){
+        //console.log("RoleUpdate");
+        self.refreshBeggarList();
+      })
+    }).catch(function(e) {
+      throw e;
+    });  
+
+    // NewApproval event
+    ContractFunctions.newApprovalEvent().then( function(event){
+      event.watch(function(err, result){
+        //console.log("NewApproval");
+        self.refreshBeggarList();
+        //TODO: self.refreshApprovalPeningList();
+        //TODO: self.refreshPaymentPeningList();
+      })
+    }).catch(function(e) {
+      throw e;
+    }); 
+
+    // NewRequest event
+    ContractFunctions.newRequestEvent().then( function(event){
+      event.watch(function(err, result){
+        //console.log("NewRequest");
+        self.refreshBeggarList();
+        //TODO: self.refreshApprovalPeningList();
+        //TODO: self.refreshPaymentPeningList();
+      })
+    }).catch(function(e) {
+      throw e;
+    }); 
+
+    // NewPaid event
+    ContractFunctions.newPaidEvent().then( function(event){
+      event.watch(function(err, result){
+        //console.log("NewPaid");
+        self.refreshBeggarList();
+        //TODO: self.refreshPaymentPeningList();
+      })
+    }).catch(function(e) {
+      throw e;
+    }); 
+
+    // NewDispute event
+    ContractFunctions.newDisputeEvent().then( function(event){
+      event.watch(function(err, result){
+        //console.log("NewPaid");
+        self.refreshBeggarList();
+        //TODO: self.refreshPaymentPeningList();
+      })
+    }).catch(function(e) {
+      throw e;
+    });     
+
   }
+
 
 };
 

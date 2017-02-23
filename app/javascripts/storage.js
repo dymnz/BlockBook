@@ -1,10 +1,15 @@
-var beggarAddresses = [];
+
 var pendingRequests = [];
 var disputedRequests = [];
 var myAccount;
 
+var beggars = {address: [], info: []};
+
+
+
+
 module.exports = {	
-	beggarAddresses: beggarAddresses,
+	beggars: beggars,
 	pendingRequests: pendingRequests,
 	disputedRequests: disputedRequests,
 	myAccount: myAccount
