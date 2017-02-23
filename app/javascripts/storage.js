@@ -1,9 +1,11 @@
 var beggarAddresses = [];
 var pendingRequests = [];
 var disputedRequests = [];
+var myAccount;
 
-module.exports = {
+module.exports = {	
 	beggarAddresses: beggarAddresses,
 	pendingRequests: pendingRequests,
-	disputedRequests: disputedRequests
+	disputedRequests: disputedRequests,
+	myAccount: myAccount
 };

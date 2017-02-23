@@ -1,10 +1,6 @@
 // Import the page's CSS. Webpack will know what to do with it.
 import "../stylesheets/app.css";
 
-// Import other JS
-var storage = require('./storage.js');
-var struct = require('./struct.js');
-
 // Import libraries we need.
 import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract'
@@ -12,40 +8,16 @@ import { default as contract } from 'truffle-contract'
 // Import our contract artifacts and turn them into usable abstractions.
 import blockBook_artifacts from '../../build/contracts/BlockBook.json'
 
-// MetaCoin is our usable abstraction, which we'll use through the code below.
-var BlockBook = contract(blockBook_artifacts);
-
-// The following code is simple to show off interacting with your contracts.
-// As your needs grow you will likely need to change its form and structure.
-// For application bootstrapping, check out window.addEventListener below.
-
-// Model
-var myAccount;  
+// The contract entry point
+var ContractFunctions = require('./contractFunctions');
+console.log(ContractFunctions);
 
 // View
 var beggarTableRows = [];
 
 window.App = {
   start: function() {
-    var self = this;
-
-    // Bootstrap the MetaCoin abstraction for Use.
-    BlockBook.setProvider(web3.currentProvider);
-    
-    // Get the initial account balance so it can be displayed.
-    web3.eth.getAccounts(function(err, accs) {
-      if (err != null) {        
-        alert("There was an error fetching your accounts.");
-        return;
-      }
-
-      if (accs.length == 0) {
-        alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
-        return;
-      }
-
-      myAccount = accs[0];
-    });
+    ContractFunctions.initContract(contract(blockBook_artifacts), web3);
   },
 
   // setStatus: function(message) {
@@ -75,22 +47,20 @@ window.App = {
   },
 
   refreshBeggarList: function () {
-    var meta;
     var self = this;
-    BlockBook.deployed().then(function(instance) {            
-        meta = instance;
-        return meta.getBeggars();
-      }).then(function(value) {
-        self.constructBeggarTable(value.length);
-        storage.beggarAddresses = [];
-        value.forEach(function(account, index){
-          beggarTableRows[index].cells[0].innerHTML = account;
-          storage.beggarAddresses.push(account);
-        })
-        console.log(storage.beggarAddresses);
-      }).catch(function(e) {
-        console.log(e);
-      });    
+    ContractFunctions.getBeggarList().then(function(result) {
+      console.log("2");
+      console.log(result);
+      });
+    // ContractFunctions.getBeggarList().then(function(value) {
+    //     console.log(value);
+    //     self.constructBeggarTable(value.length);
+    //     value.forEach(function(account, index){
+    //       beggarTableRows[index].cells[0].innerHTML = account;
+    //     })        
+    //   }).catch(function(e) {
+    //     console.log(e);
+    // });    
   }
 };
 
@@ -108,3 +78,4 @@ window.addEventListener('load', function() {
 
   App.start();
 });
+
