@@ -132,21 +132,12 @@ var newDisputeEvent = function () {
 	});
 };
 
-var newDisputeEvent = function () {
-	return BlockBook.deployed().then(function(instance) {            
-	    meta = instance;
-	    return meta.NewDispute();
-	});
-};
-
 var disputeResolvedEvent = function () {
 	return BlockBook.deployed().then(function(instance) {            
 	    meta = instance;
 	    return meta.DisputeResolved();
 	});
 };
-
-
 
 // module.exports = {
 // 	initContract: initContract,
@@ -169,6 +160,8 @@ var FundStatus = {
 };
 
 module.exports = {  
+	newDisputeEvent: newDisputeEvent,
+	disputeResolvedEvent: disputeResolvedEvent,
 	newPaidEvent: newPaidEvent,
 	newRequestEvent: newRequestEvent,
 	newApprovalEvent: newApprovalEvent,
