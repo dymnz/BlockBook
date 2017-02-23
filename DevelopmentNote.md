@@ -1,14 +1,20 @@
 ### Contract Function
 #### 1. Admin:
-  1. Assign Giver/Beggar role to an address
-  `assignRole(enum Role role, address toAddress)`
+  1. Assign Beggar role to an address
+  `addBeggar(address targetAddress, string name)`
+
+  2. Assign Giver role to an address
+  `setGiver(address targetAddress, string name)`
+
+  3. Transfer Admin role to an address
+  `transferAdmin(address targetAddress)`
 
 #### 2. Giver:
   1. Change Request status
+  `changeRequestStatus(address targetAddress, uint24 requestIndex, RequestStatus toStatus)`
 
-  ```
-  changeRequestStatus(address ofAddress, uint RequestID, enum Status toStatus)
 
+  ```  
   Allowed changes:
   "Pending Approval" -> "Approved"  
   "Pending Approval" -> "Paid"  
@@ -18,38 +24,52 @@
   ```
 
   2. Add fund
-  `addFund(uint Amount, string Reason)`
+  `addFund(uint24 amount, string reason)`
 
   3. Delete fund 
-  `deleteFund(uint FundID)`
+  `deleteFund(uint24 fundIndex)`
   
 
 #### 3. Beggar:
   1. Add a request
-  `addRequest(uint Amount, string Reason, string URL)`
+  `addRequest(uint24 amount, string reason, string receiptURL)`
 
   2. Delete a request
-  `removeRequest(uint RequestID)`
-
-  3. Dispute a request 
+  `removeRequest(uint requestIndex)`
   
+  3. Dispute a request 
+  `disputeRequest(uint requestIndex)`
+    
+    
   ```
-  disputeRequest(uint RequestID)
-
   Allowed change:
   "Paid" -> "Disputed"
   ```
-  
 
-#### 4. UI:
-  1. List requests
-  `getRequests(enum Status ofStatus, address ofAddress)`
+#### 4. Admin & Giver:
+  1. Vote to delete a Beggar
+  ` voteDelete(address targetAddress, bool vote)`   
 
-  2. List funds
-  `getFunds()`
+#### 5. UI:
+* Beggar
+  1. Get the list of Beggar's addess
+  `getBeggars()`
+  2. Get a Beggar's data structure
+  `getBeggarInfo(address targetAddress)`
+  3. Get a Beggar's remove voting status
+  `getRemoveVote(address targetAddress)`
+  4. Get a Request's data structure
+  `getRequestInfo(address targetAddress, uint24 requestIndex)`    
+  5. Get the list of a Beggar's request status
+  `listRequestStatus(address targetAddress)`
 
-  3. Show budget
-  `getBudget()`
+* Giver
+  1. Get Giver's data structure
+  `getGiver()`
+  2. Get a Funds' data structure
+  `getFundInfo(uint24 fundIndex)`
+  3. Get the list of Giver's fund status
+  `listFundStatus()`
 
 
 ### UI Function

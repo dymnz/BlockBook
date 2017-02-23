@@ -36,7 +36,7 @@ var getBeggarAddress = function () {
 
 	return BlockBook.deployed().then(function(instance) {            
 	    meta = instance;
-	    return meta.getBeggars();
+	    return meta.listBeggar();
 	}).then(function(value) {
 		storage.beggars.info = new Array(value.len).fill(0);
 	    storage.beggars.address = value;
@@ -59,7 +59,7 @@ var addBeggar = function (address, name) {
 var refreshBeggarInfo = function (address) {
 	return BlockBook.deployed().then(function(instance) {            
 	    meta = instance;
-	    return meta.getBeggar(address);
+	    return meta.getBeggarInfo(address);
 	}).then(function(value) {
 		// Second value = index;
 
@@ -91,6 +91,11 @@ var changeRequestStatus = function (targetAddress, requestIndex, toStatus)
 	});
 }
 
+
+
+
+
+
 /*Events*/
 var roleUpdateEvent = function () {
 	return BlockBook.deployed().then(function(instance) {            
@@ -119,6 +124,29 @@ var newPaidEvent = function () {
 	    return meta.NewPaid();
 	});
 };
+
+var newDisputeEvent = function () {
+	return BlockBook.deployed().then(function(instance) {            
+	    meta = instance;
+	    return meta.NewDispute();
+	});
+};
+
+var newDisputeEvent = function () {
+	return BlockBook.deployed().then(function(instance) {            
+	    meta = instance;
+	    return meta.NewDispute();
+	});
+};
+
+var disputeResolvedEvent = function () {
+	return BlockBook.deployed().then(function(instance) {            
+	    meta = instance;
+	    return meta.DisputeResolved();
+	});
+};
+
+
 
 // module.exports = {
 // 	initContract: initContract,

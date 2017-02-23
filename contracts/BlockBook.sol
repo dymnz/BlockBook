@@ -313,12 +313,12 @@ contract BlockBook {
     
     
 	/*Admin Getter*/////////////////////////////////////////////////////////
-	function getBeggars() constant returns (address[]) {
+	function listBeggar() constant returns (address[]) {
 	   return beggarAddresses;
 	}
 	
 	/*Beggar Getter*/////////////////////////////////////////////////////////
-	function getBeggar(address targetAddress) onlyTargetBeggar(targetAddress)
+	function getBeggarInfo(address targetAddress) onlyTargetBeggar(targetAddress)
 	    constant returns (string, uint24, uint24, uint24, uint24) 
     {
         return (beggars[targetAddress].name, 
@@ -335,7 +335,7 @@ contract BlockBook {
 	            beggars[targetAddress].removeVote.adminVote);
 	}
     
-	function getRequest(address targetAddress, uint24 requestIndex) onlyTargetBeggar(targetAddress) 
+	function getRequestInfo(address targetAddress, uint24 requestIndex) onlyTargetBeggar(targetAddress) 
 	    constant returns (uint24, string, string, uint)   
     {
         if (requestIndex >= beggars[targetAddress].requests.length) return;
@@ -360,7 +360,15 @@ contract BlockBook {
                 giver.approved, 
                 giver.paid);
 	}
-	
+
+	function getFundInfo(uint24 fundIndex) constant returns (uint24, string)   
+    {
+        if (fundIndex >= giver.funds.length) return;
+        
+        return (giver.funds[fundIndex].amount,
+	        	giver.funds[fundIndex].reason);
+	}
+
 	function listFundStatus() constant returns (FundStatus[])
     {
        return giver.fundStatus;

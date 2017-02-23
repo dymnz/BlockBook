@@ -145,7 +145,7 @@ window.App = {
       event.watch(function(err, result){
         //console.log("NewPaid");
         self.refreshBeggarList();
-        //TODO: self.refreshPaymentPeningList();
+        //TODO: self.refreshPaymentPendingList();
       })
     }).catch(function(e) {
       throw e;
@@ -156,12 +156,26 @@ window.App = {
       event.watch(function(err, result){
         //console.log("NewPaid");
         self.refreshBeggarList();
-        //TODO: self.refreshPaymentPeningList();
+        //TODO: self.refreshPaymentPendingList();
+        //TODO: self.refreshApprovalPeningList();
+        //TODO: self.refreshDisputeList();
       })
     }).catch(function(e) {
       throw e;
     });     
 
+    //  DisputeResolved event
+    ContractFunctions.disputeResolvedEvent().then( function(event){
+      event.watch(function(err, result){
+        //console.log("NewPaid");
+        self.refreshBeggarList();
+        //TODO: self.refreshPaymentPeningList();
+        //TODO: self.refreshApprovalPendingList();
+        //TODO: self.refreshDisputeList();
+      })
+    }).catch(function(e) {
+      throw e;
+    });       
   }
 
 
