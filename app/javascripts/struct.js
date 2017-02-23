@@ -13,7 +13,7 @@ function RemoveVote(giverVote, adminVote) {
     this.adminVote = adminVote;
 }
 
-function Beggar(addr, addressIndex, budget, approved, paid, funds, fundStatus) {
+function Giver(addr, addressIndex, budget, approved, paid, funds, fundStatus) {
     this.addr = addr;
     this.addressIndex = addressIndex;
     this.budget = budget;
@@ -32,3 +32,11 @@ function Beggar(name, addressIndex, requested, approved, paid, requests, request
     this.requestStatus = requestStatus;
     this.removeVote = removeVote;
 }
+
+module.exports = {
+	Request: Request,
+	Fund: Fund,	
+	RemoveVote: RemoveVote,
+	Giver: Giver,
+	Beggar: Beggar
+};

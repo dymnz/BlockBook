@@ -1,6 +1,10 @@
 // Import the page's CSS. Webpack will know what to do with it.
 import "../stylesheets/app.css";
 
+// Import other JS
+var storage = require('./storage.js');
+var struct = require('./struct.js');
+
 // Import libraries we need.
 import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract'
@@ -16,8 +20,7 @@ var BlockBook = contract(blockBook_artifacts);
 // For application bootstrapping, check out window.addEventListener below.
 
 // Model
-var accountBalances = [];
-var account;  
+var myAccount;  
 
 // View
 var beggarTableRows = [];
@@ -40,11 +43,8 @@ window.App = {
         alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
         return;
       }
-      account = accs[0];
 
-
-
-      self.refreshBalance();
+      myAccount = accs[0];
     });
   },
 
@@ -74,20 +74,20 @@ window.App = {
       }
   },
 
-  getBeggarList: function () {
+  refreshBeggarList: function () {
     var meta;
     var self = this;
     BlockBook.deployed().then(function(instance) {            
         meta = instance;
         return meta.getBeggars();
       }).then(function(value) {
-        // Modify account balance in Model and View
-          self.constructBeggarTable(value.length);
-          value.forEach(function(account, index){
-            beggarTableRows[index].cells[0].innerHTML = account;
-          })
-          // beggarAddresses.push()
-          // ;                  
+        self.constructBeggarTable(value.length);
+        storage.beggarAddresses = [];
+        value.forEach(function(account, index){
+          beggarTableRows[index].cells[0].innerHTML = account;
+          storage.beggarAddresses.push(account);
+        })
+        console.log(storage.beggarAddresses);
       }).catch(function(e) {
         console.log(e);
       });    
