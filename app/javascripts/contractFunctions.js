@@ -38,8 +38,8 @@ var getBeggarAddress = function () {
 	    meta = instance;
 	    return meta.listBeggar();
 	}).then(function(value) {
-		storage.beggars.info = new Array(value.len).fill(0);
-	    storage.beggars.address = value;
+		storage.beggarList.info = new Array(value.len).fill(0);
+	    storage.beggarList.address = value;
 	    return value;
 	});
 };
@@ -67,7 +67,7 @@ var refreshBeggarInfo = function (address) {
 		value[1], value[2], value[3], value[4], [], [], []);
 		index = value[1];
 
-		storage.beggars.info[index] = beggar;
+		storage.beggarList.info[index] = beggar;
 	    return beggar;
 	});
 }

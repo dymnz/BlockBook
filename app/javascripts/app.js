@@ -156,7 +156,7 @@ window.App = {
       event.watch(function(err, result){
         //console.log("NewPaid");
         self.refreshBeggarList();
-        //TODO: self.refreshPaymentPendingList();
+        //TODO: self.a();
         //TODO: self.refreshApprovalPeningList();
         //TODO: self.refreshDisputeList();
       })

@@ -3,13 +3,13 @@ var pendingRequests = [];
 var disputedRequests = [];
 var myAccount;
 
-var beggars = {address: [], info: []};
+var beggarList = {address: [], info: []};
 
 
 
 
 module.exports = {	
-	beggars: beggars,
+	beggarList: beggarList,
 	pendingRequests: pendingRequests,
 	disputedRequests: disputedRequests,
 	myAccount: myAccount

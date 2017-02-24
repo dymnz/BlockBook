@@ -54,7 +54,7 @@
 * Beggar
 
 1. Get the list of Beggar's addess
-`getBeggars()`
+`listBeggar()`
 2. Get a Beggar's data structure
 `getBeggarInfo(address targetAddress)`
 3. Get a Beggar's remove voting status
@@ -79,25 +79,76 @@
   NO UI required for Admin, contract functions are invoked from console.
     
 #### 2. Giver:
-  1. Budget
-  	1. Paid requests
-  	2. Add fund
-    3. Delete fund
-  2. Check pending requests
-    1. Sort by deadline/time
-    2. Pay requests
-  3. Dispute
-  	1. Edit requests
+  * Request status page (Default page): 
+    1. Dispute list (Global)
+    `refreshDisputeList()`
+    2. Approval pending list (Global)
+    `refreshApprovalPeningList()`
+    3. Payment pending list (Global)
+    `refreshPaymentPendingList()`
+
+  ```
+    Implementation:
+    1. List beggar
+      * Show only active beggar
+    2. List request status
+      * Show only corresponding requests
+    3. Refresh Dispute/ApprovalPending/PaymentPending storage
+    4. Refresh UI
+
+    Note: 3 and 4 should be done like refreshBeggarList(), where storage update is invoked by App and ContractFunction update storages as App pulls data. So in the program, storage update is in fact invoked by UI
+
+    Note: List sort from old -> new
+  ```
+  * Beggar status page:
+    1. Beggar info list
+  	
+  * Fund list:
+    1. Fund info list
+    
+  ```
+      Implementation:
+      1. List fund
+      2. List fund status
+      3. Refresh Giver's Fund storage    
+      4. Refresh UI
+
+      Note: 3 and 4 like above
+  ```
+
+##### Toolbar 
+    1. Under every request:
+    `changeRequestStatus()`
+    2. Under every fund:
+    `addFund()` and `deleteFund()`
+
   
 #### 3. Beggar:
-  1. Request
-    1. List requests
-      1. Unpaid
-      	1. Remove
-      2. Paid
-        1. Dispute     
-    2. Add request
-      
+* Updated request status (Local) (Default page) 
+    1. Approval list
+    2. Payment list
+    3. Pending list
+    
+    ```
+    Implementation:
+    Query event NewApproval
+    Quert event NewPaid
+
+    1. List request status
+      * Show only corresponding requests
+    2. Refresh beggar requests[] storage
+    3. Refresh UI
+    
+    Note: 3 and 4 like above
+  
+    Note: The list sorts from new -> old, except for pending
+
+    ```
+
+##### Toolbar 
+    1. Under every request:
+    `changeRequestStatus()`
+
 ### Data Structure
 * Request 
   * Amount
@@ -124,6 +175,10 @@
 ### Design rules
 * A Beggar's Requests is stored in an array under the Beggar's Account
 * Rmoveal of Account/Request requires multi-sig
+
+### Possible improvement
+1. Request urgency: An attribute of a request that signifies urgency. When showing list, list according to urgency.
+
 
   
 ### Vocabulary

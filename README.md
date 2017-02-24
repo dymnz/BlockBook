@@ -25,10 +25,3 @@ $ npm install
 $ truffle compile
 $ truffle migrate
 ```
-
-### 
-```
-$ npm install --save-dev url-loader file-loader 
-$ npm install --save style-loader cssloader
-$ npm install --save materialize-loader
-```
