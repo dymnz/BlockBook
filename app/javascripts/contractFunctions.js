@@ -18,12 +18,12 @@ var initContract = function (_blockBook, _web3) {
 	web3.eth.getAccounts(function(err, accs) {
 		if (err != null) {        
 			alert("There was an error fetching your accounts.");
-	    	return;
+	    	throw "There was an error fetching your accounts.";
 	 	}
 
 		if (accs.length == 0) {
 			alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
-			return;
+			throw "Couldn't get any accounts! Make sure your Ethereum client is configured correctly.";
 		}
 
 	  	storage.myAccount = accs[0];
@@ -74,7 +74,7 @@ var refreshAdminInfo = function () {
 	 });
 };
 
-var getAdminInfo = function () {
+var getAdminInfo = function () {;
 	return storage.admin;
 }
 

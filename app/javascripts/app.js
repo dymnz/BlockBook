@@ -31,11 +31,17 @@ window.App = {
     ContractFunctions.initContract
     (contract(blockBook_artifacts), web3);
 
-    self.refreshGiverInfo();
-    self.refreshBeggarList();
-    self.refreshAdminInfo();
+    self.refreshGiverInfo().then(function () {
+      return self.refreshBeggarList();
+    }).then(function () {
+      return self.refreshAdminInfo();
+    }).then(function () {
+      self.findMyAccountRole();
+    });
+    
+    
 
-    self.findMyAccountRole();
+    
 
     self.addEventListener();    
   },
@@ -46,7 +52,17 @@ window.App = {
   // },
 
   findMyAccountRole: function () {
-    //if ()
+    var self = this;
+
+    var myAccount = ContractFunctions.getMyAccount();
+    if (myAccount = ContractFunctions.getAdminInfo().addr) {
+
+      console.log("You are Admin");
+    } else if (myAccount = ContractFunctions.getGiverInfo().addr) {
+      console.log("You are Giver");
+    } else {
+      console.log("TODO: check if myAccount is in beggarList");
+    }
     // TODO:
   },
 
@@ -80,16 +96,20 @@ window.App = {
   },
 
   refreshGiverInfo: function () {
-    ContractFunctions.refreshGiverInfo();
+    return ContractFunctions.refreshGiverInfo().then(function () {
+      console.log("refreshGiverInfo done");
+    });
   },
 
   refreshAdminInfo: function () {
-    ContractFunctions.refreshAdminInfo();
+    return ContractFunctions.refreshAdminInfo().then(function () {
+      console.log("refreshAdminInfo done");
+    });
   },
 
   refreshBeggarList: function () {
     var self = this;
-    ContractFunctions.refreshBeggarAddress().then(function(addresses) {
+    return ContractFunctions.refreshBeggarAddress().then(function(addresses) {
       self.resetBeggarTable(addresses.length);
       addresses.forEach(function(address, index){
         ContractFunctions.refreshBeggarInfo(address).then(function(beggar) {
@@ -99,6 +119,7 @@ window.App = {
           beggarTableRows[index].cells[3].innerHTML = beggar.paid;            
         });
       })
+      console.log("refreshBeggarList done");
       console.log(addresses);
     });
 
