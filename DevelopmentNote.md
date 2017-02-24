@@ -103,11 +103,11 @@
     1. Beggar info list
   ```
     Implementation:
-    1. List Beggar
-      * Address 0x0 means account deleted
-    2. Update Beggar info
-    3. Refresh BeggarList/Beggar's info storage
-    4. refresh UI
+      1. List Beggar
+        - Address 0x0 means account deleted
+      2. Update Beggar info
+      3. Refresh BeggarList/Beggar's info storage
+      4. refresh UI
 
     Note: 3 and 4 same as above
   ```
