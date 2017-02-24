@@ -1,9 +1,9 @@
 var beggarInfo = `
 			<div class="beggarInfo">
                 <div class="cell name"></div>
-                <div class="cell requested"></div>
-                <div class="cell approved"></div>  
-                <div class="cell paid"></div>               
+                <div class="cell requested number"></div>
+                <div class="cell approved number"></div>  
+                <div class="cell paid number"></div>               
     		</div>`;
 
 var beggarTable = `

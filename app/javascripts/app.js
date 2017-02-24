@@ -97,18 +97,16 @@ window.App = {
     return ContractFunctions.refreshBeggarAddress().then(function(addresses) {
       // Count none "0x0" addresses
       var count = 0;
+      var cleanedAddresses = [];
       addresses.forEach(function(address, index) {
         if (address.localeCompare("0x0000000000000000000000000000000000000000"))
-          count++;
+          cleanedAddresses.push(address);
       })
       var table = document.getElementById("beggarTable");
 
-      self.resetBeggarTable(count);
+      self.resetBeggarTable(cleanedAddresses.length);
       
-      addresses.forEach(function(address, index){
-        if (!address.localeCompare("0x0000000000000000000000000000000000000000"))
-          return;        
-
+      cleanedAddresses.forEach(function(address, index){
         var table = document.getElementById("beggarTable");
         var color = HashColor.hashColor(address)
 

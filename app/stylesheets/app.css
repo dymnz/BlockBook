@@ -1,8 +1,13 @@
+html {
+    display: table;
+    width: 100%;
+    font-family: "Open Sans", sans-serif;
+}
+
 body {
   margin-left: 2%;
   margin-right: 2%;
   margin-top: 1%;
-  font-family: "Open Sans", sans-serif;
 }
 
 h1{
@@ -25,20 +30,25 @@ h4 {
   padding: 0;  
 }
 
-#content {
-  margin-left: 2%;
-  margin-right: 2%;
-  margin-top: 1%;
-
-  min-height: 100px;
-  background-color: #eee;
-  border-style: solid;
-}
-
 .header {
   position: relative;
   display: block;
 }
+
+#content {
+  margin: auto;
+  display: block;
+
+  margin-top: 1vmin;
+  padding-top: 1vmin;
+
+  max-width: 1000px;
+  min-height: 800px;
+  min-width: 500px;
+  background-color: #eee;
+  border-radius: 10px;
+}
+
 
 /*Beggar table*/
 
@@ -54,11 +64,12 @@ h4 {
   height: 100%;
 }
 
+
 .beggarInfo {
   display: inline-block;
-  width: 47%;  
+  width: 95%;  
   height: 10vh;
-
+  
   margin-top: 1vmin;
   margin-bottom: 1vmin;
   margin-left: 2%;  
@@ -72,6 +83,22 @@ h4 {
   border-radius: 7px;
 
   text-align: center;
-  font-size: 3vmin;
+  font-size: 4vmin;
 }
+
+/*
+.beggarInfo .number {
+  font-size: 3vmin;
+}*/
+
+@media only screen and (min-width: 800px) {
+  .beggarInfo {
+    width: 47%;   
+  }
+
+  .beggarInfo .cell {
+    font-size: 2.5vmin;
+  }
+}
+
 
