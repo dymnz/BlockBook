@@ -1,5 +1,6 @@
 // Import the page's CSS. Webpack will know what to do with it.
 import "../stylesheets/app.css";
+import "../stylesheets/modal.css";
 
 // Import libraries we need.
 import { default as Web3} from 'web3';
@@ -35,7 +36,7 @@ window.App = {
     (contract(blockBook_artifacts), web3);
 
     self.refreshGiverInfo().then(function () {
-      return self.showBeggarList();
+      return self.refreshBeggarList();
     }).then(function () {
       return self.refreshAdminInfo();
     }).then(function () {
@@ -44,7 +45,8 @@ window.App = {
       self.addEventListener(); 
     });   
 
-
+    //self.showBeggarList();
+    self.showAddRequestModal();
   },
 
   // setStatus: function(message) {
@@ -55,16 +57,15 @@ window.App = {
   findMyAccountRole: function () {
     var self = this;
 
+//TODO:
     var myAccount = ContractFunctions.getMyAccount();
-    if (myAccount = ContractFunctions.getAdminInfo().addr) {
-
+    if (ContractFunctions.isAdmin(myAccount)) {
       console.log("You are Admin");
-    } else if (myAccount = ContractFunctions.getGiverInfo().addr) {
+    } else if (ContractFunctions.isGiver(myAccount)) {
       console.log("You are Giver");
-    } else {
-      console.log("TODO: check if myAccount is in beggarList");
+    } else if (ContractFunctions.isBeggar(myAccount)){
+      console.log("You are Beggar");
     }
-    // TODO:
   },
 
   resetBeggarTable: function (count) {
@@ -91,40 +92,43 @@ window.App = {
     return ContractFunctions.refreshAdminInfo();
   },
 
-  showBeggarList: function () {
+  refreshBeggarList: function () {
     var self = this;
   
     return ContractFunctions.refreshBeggarAddress().then(function(addresses) {
-      // Count none "0x0" addresses
-      var count = 0;
-      var cleanedAddresses = [];
-      addresses.forEach(function(address, index) {
-        if (address.localeCompare("0x0000000000000000000000000000000000000000"))
-          cleanedAddresses.push(address);
-      })
-      var table = document.getElementById("beggarTable");
-
-      self.resetBeggarTable(cleanedAddresses.length);
-      
-      cleanedAddresses.forEach(function(address, index){
-        var table = document.getElementById("beggarTable");
-
-        ContractFunctions.refreshBeggarInfo(address).then(function(beggar) {
-                  
-          table.getElementsByClassName("name")[index].innerHTML = beggar.name;
-          table.getElementsByClassName("requested")[index].innerHTML = beggar.requested;
-          table.getElementsByClassName("approved")[index].innerHTML = beggar.approved;
-          table.getElementsByClassName("paid")[index].innerHTML = beggar.paid;
-
-          var cells = table.children[index].children;
-          for(var i = 0; i < cells.length; i++) {
-            cells[i].style.backgroundColor = HashColor.hashColor(address, 80+3*i);
-          }
-        });
+      addresses.forEach(function(address, index){
+        ContractFunctions.refreshBeggarInfo(address);
       })
       console.log(addresses);
     });
+  },
 
+  showBeggarList: function () {
+    var self = this;
+  
+    var addresses = ContractFunctions.getBeggarAddress();
+    
+    self.resetBeggarTable(addresses.length);
+    var table = document.getElementById("beggarTable");
+
+    addresses.forEach(function(address, index){      
+      var beggar = ContractFunctions.getBeggarInfo(address);  
+
+      table.getElementsByClassName("name")[index].innerHTML = beggar.name;
+      table.getElementsByClassName("requested")[index].innerHTML = beggar.requested;
+      table.getElementsByClassName("approved")[index].innerHTML = beggar.approved;
+      table.getElementsByClassName("paid")[index].innerHTML = beggar.paid;
+
+      var cells = table.children[index].children;
+      for(var i = 0; i < cells.length; i++) {
+        cells[i].style.backgroundColor = HashColor.hashColor(address, 80+3*i);
+      }
+    });
+  },
+
+  showAddRequestModal: function () {       
+    var modal = document.getElementById('requestModal');
+    modal.style.display = "block";
   },
 
   addBeggar: function (address, name) {    
@@ -133,6 +137,10 @@ window.App = {
     }).catch(function(e) {
       console.log(e);
     });
+  },
+
+  sendRequest: function () {
+    console.log("testssssssssssssssssssssssssssssssss");
   },
 
   /*Beggar function*/
@@ -163,7 +171,7 @@ window.App = {
     ContractFunctions.roleUpdateEvent({}, {from: 'latest', to: 'latest'}).then( function(event){
       event.watch(function(err, result){
         console.log("RoleUpdate");
-        self.showBeggarList();
+        self.refreshBeggarList();
       })
     }).catch(function(e) {
       throw e;
@@ -173,7 +181,7 @@ window.App = {
     ContractFunctions.newApprovalEvent().then( function(event){
       event.watch(function(err, result){
         console.log("NewApproval");
-        self.showBeggarList();
+        self.refreshBeggarList();
         //TODO: self.refreshApprovalPeningList();
         //TODO: self.refreshPaymentPeningList();
       })
@@ -185,7 +193,7 @@ window.App = {
     ContractFunctions.newRequestEvent().then( function(event){
       event.watch(function(err, result){
         console.log("NewRequest: " + result.args._beggarAddress);
-        self.showBeggarList();
+        self.refreshBeggarList();
         //TODO: self.refreshApprovalPeningList();
         //TODO: self.refreshPaymentPeningList();
       })
@@ -197,7 +205,7 @@ window.App = {
     ContractFunctions.newPaidEvent().then( function(event){
       event.watch(function(err, result){
         console.log("NewPaid");
-        self.showBeggarList();
+        self.refreshBeggarList();
         //TODO: self.refreshPaymentPendingList();
       })
     }).catch(function(e) {
@@ -208,7 +216,7 @@ window.App = {
     ContractFunctions.newDisputeEvent().then( function(event){
       event.watch(function(err, result){
         console.log("NewPaid");
-        self.showBeggarList();
+        self.refreshBeggarList();
         //TODO: self.refreshPaymentPendingList();
         //TODO: self.refreshApprovalPendingList();
         //TODO: self.refreshDisputeList();
@@ -221,7 +229,7 @@ window.App = {
     ContractFunctions.disputeResolvedEvent().then( function(event){
       event.watch(function(err, result){
         console.log("NewPaid");
-        self.showBeggarList();
+        self.refreshBeggarList();
         //TODO: self.refreshPaymentPeningList();
         //TODO: self.refreshApprovalPendingList();
         //TODO: self.refreshDisputeList();
@@ -229,6 +237,29 @@ window.App = {
     }).catch(function(e) {
       throw e;
     });       
+
+
+    var requestModal = document.getElementById('requestModal');
+    var span = document.getElementsByClassName("close")[0];
+    var button = document.getElementsByClassName("formButton")[0];
+    span.onclick = function() {
+      requestModal.style.display = "none";      
+    };
+
+    button.onclick =  function() {
+      requestModal.style.display = "none";
+      var amount = requestModal.getElementsByClassName("amount")[0].value;
+      var reason = requestModal.getElementsByClassName("reason")[0].value;
+      self.addRequest(amount, reason, "");
+    };
+
+    window.onclick = function(event) {
+      if (event.target == requestModal) {
+          requestModal.style.display = "none";
+      }
+    };
+
+    
   }
 
 

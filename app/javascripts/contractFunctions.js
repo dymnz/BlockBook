@@ -41,9 +41,15 @@ var refreshBeggarAddress = function () {
 	    meta = instance;
 	    return meta.listBeggar();
 	}).then(function(value) {
-		storage.beggarList.info = new Array(value.len).fill(0);
-	    storage.beggarList.address = value;
-	    return value;
+		var cleanedAddresses = [];
+		value.forEach(function (address, index) {
+  			if (address.localeCompare("0x0000000000000000000000000000000000000000"))
+    			cleanedAddresses.push(address);
+		});
+
+		storage.beggarList.info = new Array(cleanedAddresses.len).fill(0);
+	    storage.beggarList.address = cleanedAddresses;
+	    return cleanedAddresses;
 	});
 };
 
@@ -84,24 +90,38 @@ var refreshBeggarInfo = function (address) {
 	    return meta.getBeggarInfo(address);
 	}).then(function(value) {
 		// Second value = index;
-
 		var beggar = new struct.Beggar(value[0],
 		value[1], value[2], value[3], value[4], [], [], []);
-		index = value[1];
+		index = findBeggarListIndex(address);
 
 		storage.beggarList.info[index] = beggar;
 	    return storage.beggarList.info[index];
 	});
 }
 
-var getBeggarInfo = function (address) {
-	index = storage.beggarList.address.findIndex(function (_address) {
-		return address = _address;
+var findBeggarListIndex = function (_address) {	
+	index = storage.beggarList.address.findIndex(function (address) {
+		return address == _address;
 	});
-	if (index == -1)
-		throw "Invalid beggar address";
 
+	return index;
+}
+
+var getBeggarInfo = function (address) {
+	index = findBeggarListIndex(address);
 	return storage.beggarList.info[index];
+}
+
+var isBeggar = function (address) {
+	return findBeggarListIndex(address) != -1;
+}
+
+var isAdmin = function (address) {
+	return address == storage.admin.addr;
+}
+
+var isGiver = function (address) {
+	return address == storage.giver.addr;
 }
 
 //function Giver(addr, addressIndex, budget, approved, paid, funds, fundStatus)
@@ -223,5 +243,7 @@ module.exports = {
 	getAdminInfo: getAdminInfo,
 	getMyAccount: getMyAccount,
 	roleUpdateEvent: roleUpdateEvent,
-
+	isBeggar: isBeggar,
+	isGiver: isGiver,
+	isAdmin: isAdmin
 };

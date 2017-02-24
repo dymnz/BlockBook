@@ -195,8 +195,11 @@
 1. Request urgency: An attribute of a request that signifies urgency. When showing list, list according to urgency.
   * Will people use this?
 2. View protection: A Global view query can only be submitted by Giver. A Local view query can only be submiited by the Local storage owner.
-  * An open book might be better?
+  * An open ledger might be better?
+  * Currently not doable on blockchain, must rely other encryption
 3. Utilize Solidity public modifier
+4. Beggar account transfer
+5. Multiple Givers (Departmentalize)
 
   
 ### Vocabulary

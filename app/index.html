@@ -4,24 +4,39 @@
 <head>
     <title>Ξ BlockBook</title>
     <!--
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    -->
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+        -->
     <script src="./app.js"></script>
 </head>
 
 <body>
     <div class="header">
-    <h1>Ξ BlockBook</h1><h4>Payment request system</h4>
+        <h1>Ξ BlockBook</h1>
+        <h4>Payment request system</h4>
     </div>
-
     <div id="content">
         <div id="beggarTable">
         </div>
-    <br>
-    <br>
-    <span id="status"></span>
-    <br>
-    </div>    
+        <br>
+        <br>
+        <span id="status"></span>
+        <br>
+    </div>
+    <div id="requestModal" class="modal">
+        <div class="modal-content">
+            <div class="formHeader">
+                <span class="formTitle">Submit request</span>
+                <span class="close">&times;</span>
+            </div>
+            <div class="formContent">
+                <span class="formText">Amount</span>
+                <input type="number" class="amount" placeholder="0">
+                <span class="formText">Reason</span>
+                <input type="text" class="reason" placeholder="Because...">
+                <button type="button" class="formButton">Send</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
