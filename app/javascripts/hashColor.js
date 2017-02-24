@@ -25,7 +25,7 @@
 		return (randseed[3]>>>0) / ((1 << 31)>>>0);
 	}
 
-	function createColor() {
+	function createColor(baseL) {
 		//saturation is the whole color spectrum
 		var h = Math.floor(rand() * 360);
 		//saturation goes from 40 to 100, it avoids greyish colors
@@ -34,8 +34,8 @@
 		var l = ((rand()+rand()+rand()+rand()) * 25)
 
 		//ensure lightness > 80%
-		if (l < 80)
-			l = 80;
+		if (l < baseL)
+			l = baseL;
 
 		l += '%';
 
@@ -43,12 +43,12 @@
 		return color;
 	}
 
-	function hashColor(address) {
+	function hashColor(address, baseL) {
 		var seed = address;
 
 		seedrand(seed);
 
-		return createColor();		
+		return createColor(baseL);		
 	}
 
 	//window.hashColor = {hashColor: hashColor};

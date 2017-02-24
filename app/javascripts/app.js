@@ -108,7 +108,6 @@ window.App = {
       
       cleanedAddresses.forEach(function(address, index){
         var table = document.getElementById("beggarTable");
-        var color = HashColor.hashColor(address)
 
         ContractFunctions.refreshBeggarInfo(address).then(function(beggar) {
                   
@@ -119,7 +118,7 @@ window.App = {
 
           var cells = table.children[index].children;
           for(var i = 0; i < cells.length; i++) {
-            cells[i].style.backgroundColor = color;
+            cells[i].style.backgroundColor = HashColor.hashColor(address, 80+3*i);
           }
         });
       })
