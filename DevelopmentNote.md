@@ -1,4 +1,4 @@
-### Contract Function
+### Contract function
 #### 1. Admin:
   1. Assign Beggar role to an address
   `addBeggar(address targetAddress, string name)`
@@ -74,7 +74,7 @@
 `listFundStatus()`
 
 
-### UI Function
+### UI function
 #### 1. Admin: 
   NO UI required for Admin, contract functions are invoked from console.
     
@@ -117,10 +117,10 @@
   ```
 
 ##### Toolbar 
-    1. Under every request:
-    `changeRequestStatus()`
-    2. Under every fund:
-    `addFund()` and `deleteFund()`
+  1. Under every request:
+  `changeRequestStatus()`
+  2. Under every fund:
+  `addFund()` and `deleteFund()`
 
   
 #### 3. Beggar:
@@ -146,10 +146,10 @@
     ```
 
 ##### Toolbar 
-    1. Under every request:
-    `changeRequestStatus()`
+  1. Under every request:
+  `changeRequestStatus()`
 
-### Data Structure
+### Data structure
 * Request 
   * Amount
   * Reason
@@ -176,8 +176,11 @@
 * A Beggar's Requests is stored in an array under the Beggar's Account
 * Rmoveal of Account/Request requires multi-sig
 
-### Possible improvement
+### Possible improvements
 1. Request urgency: An attribute of a request that signifies urgency. When showing list, list according to urgency.
+  * Will people use this?
+2. View protection: A Global view query can only be submitted by Giver. A Local view query can only be submiited by the Local storage owner.
+  * An open book might be better?
 
 
   

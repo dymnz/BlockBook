@@ -15,6 +15,17 @@ console.log(ContractFunctions);
 // View
 var beggarTableRows = [];
 
+
+// Enum
+var AccountRole = {
+  PendingApproval: 0,
+  Approved: 1,
+  Paid: 2,
+  Disputed: 3,
+  Removed: 4
+};
+
+
 window.App = {
   start: function() {
     var self = this;

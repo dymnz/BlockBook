@@ -1,5 +1,5 @@
-window.App.changeRequestStatus("0xfabda61c231ec7c1154140b520d47f9bd09e7693", 0, 1)
-window.App.addBeggar("0xfabda61c231ec7c1154140b520d47f9bd09e7693", "beggar")
+window.App.changeRequestStatus("0xfabda61c231ec7c1154140b520d47f9bd09e7693", 1, 1)
+window.App.addBeggar("0xfabda61c231ec7c1154140b520d47f9bd09e7693", "測試")
 window.App.getBeggar("0xfabda61c231ec7c1154140b520d47f9bd09e7693")
 window.App.refreshBeggarList()
 window.App.addRequest(999, "test", "url")
