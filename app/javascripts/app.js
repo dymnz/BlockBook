@@ -12,18 +12,16 @@ import blockBook_artifacts from '../../build/contracts/BlockBook.json'
 var ContractFunctions = require('./contractFunctions');
 console.log(ContractFunctions);
 
-// View
-var beggarTableRows = [];
-
-
 // Enum
 var AccountRole = {
-  PendingApproval: 0,
-  Approved: 1,
-  Paid: 2,
-  Disputed: 3,
-  Removed: 4
+  Admin: 0,
+  Giver: 1,
+  Beggar: 2
 };
+
+// View
+var myAccountRole = AccountRole.Beggar;
+var beggarTableRows = [];
 
 
 window.App = {
@@ -33,7 +31,12 @@ window.App = {
     ContractFunctions.initContract
     (contract(blockBook_artifacts), web3);
 
+    self.refreshGiverInfo();
     self.refreshBeggarList();
+    self.refreshAdminInfo();
+
+    self.findMyAccountRole();
+
     self.addEventListener();    
   },
 
@@ -41,6 +44,11 @@ window.App = {
   //   var status = document.getElementById("status");
   //   status.innerHTML = message;
   // },
+
+  findMyAccountRole: function () {
+    //if ()
+    // TODO:
+  },
 
   resetBeggarTable: function (count) {
       var table = document.getElementById("beggarTable");
@@ -71,10 +79,17 @@ window.App = {
       }
   },
 
+  refreshGiverInfo: function () {
+    ContractFunctions.refreshGiverInfo();
+  },
+
+  refreshAdminInfo: function () {
+    ContractFunctions.refreshAdminInfo();
+  },
+
   refreshBeggarList: function () {
     var self = this;
-
-    ContractFunctions.getBeggarAddress().then(function(addresses) {
+    ContractFunctions.refreshBeggarAddress().then(function(addresses) {
       self.resetBeggarTable(addresses.length);
       addresses.forEach(function(address, index){
         ContractFunctions.refreshBeggarInfo(address).then(function(beggar) {
@@ -85,7 +100,8 @@ window.App = {
         });
       })
       console.log(addresses);
-    });   
+    });
+
   },
 
   addBeggar: function (address, name) {    
@@ -96,6 +112,7 @@ window.App = {
     });
   },
 
+  /*Beggar function*/
   addRequest: function (amount, reason, receiptURL) {
     ContractFunctions.addRequest(amount, reason, receiptURL).then(function(result) {
       console.log(result);
@@ -104,6 +121,7 @@ window.App = {
     });
   },
 
+  /*Giver function*/
   changeRequestStatus: function (targetAddress, requestIndex, toStatus)  
   {
     ContractFunctions.changeRequestStatus(targetAddress, requestIndex, 
@@ -114,6 +132,7 @@ window.App = {
     });
   },
   
+  /*UI function*/
   addEventListener: function () {
     var self = this;
 
@@ -142,7 +161,8 @@ window.App = {
     // NewRequest event
     ContractFunctions.newRequestEvent().then( function(event){
       event.watch(function(err, result){
-        //console.log("NewRequest");
+        console.log("NewRequest: " + result.args._beggarAddress);
+        //console.dir(result);
         self.refreshBeggarList();
         //TODO: self.refreshApprovalPeningList();
         //TODO: self.refreshPaymentPeningList();
@@ -167,8 +187,8 @@ window.App = {
       event.watch(function(err, result){
         //console.log("NewPaid");
         self.refreshBeggarList();
-        //TODO: self.a();
-        //TODO: self.refreshApprovalPeningList();
+        //TODO: self.refreshPaymentPendingList();
+        //TODO: self.refreshApprovalPendingList();
         //TODO: self.refreshDisputeList();
       })
     }).catch(function(e) {

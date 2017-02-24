@@ -1,7 +1,7 @@
 body {
-  margin-left: 25%;
-  margin-right: 25%;
-  margin-top: 10%;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-top: 1%;
   font-family: "Open Sans", sans-serif;
 }
 
@@ -22,10 +22,11 @@ button {
 }
 
 h1, h2 {
-  display: inline-block;
+  display: inline;
   vertical-align: middle;
   margin-top: 0px;
-  margin-bottom: 10px;
+  margin-bottom: 10px;  
+  padding: 0 0 0 0;
 }
 
 h2 {
@@ -38,6 +39,23 @@ h3 {
   color: #AAA;
   font-size: 24px;
 }
+
+h4 {
+  display: inline;
+  font-weight: normal;
+  color: #999;
+  font-size: 12px;
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  padding: 0 0 0 0 ;
+}
+
+.header {
+  position: relative;
+}
+
 
 .tableTitle {
   font-size: 16px;

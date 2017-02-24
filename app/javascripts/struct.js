@@ -27,12 +27,18 @@ function RemoveVote(giverVote, adminVote) {
     this.adminVote = adminVote;
 }
 
-function Giver(addr, addressIndex, budget, approved, paid, funds, fundStatus) {
+function Admin(addr, name) {
+    if (arguments.length != Admin.length)
+        throw 'Not enough arguments: Admin'
+    this.addr = addr;
+    this.name = name;
+}
+function Giver(addr, name, budget, approved, paid, funds, fundStatus) {
     if (arguments.length != Giver.length)
         throw 'Not enough arguments: Giver'
 
     this.addr = addr;
-    this.addressIndex = addressIndex;
+    this.name = name;
     this.budget = budget;
     this.approved = approved;
     this.paid = paid;
@@ -43,7 +49,6 @@ function Beggar(name, addressIndex, requested, approved, paid, requests, request
     if (arguments.length != Beggar.length) {
         throw 'Not enough arguments: Beggar'
     }
-    
 
     this.name = name;
     this.addressIndex = addressIndex;
@@ -59,6 +64,7 @@ module.exports = {
 	Request: Request,
 	Fund: Fund,	
 	RemoveVote: RemoveVote,
+    Admin: Admin,
 	Giver: Giver,
 	Beggar: Beggar
 };

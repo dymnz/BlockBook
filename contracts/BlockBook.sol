@@ -41,6 +41,10 @@ contract BlockBook {
 	}
 
 	/*Member struct*/
+    struct Admin {
+        address addr;
+        string name;
+    }
 	struct Giver {
 		address addr;
 		string name;
@@ -62,7 +66,7 @@ contract BlockBook {
 	}
 
 	/*Storage*/
-	address admin;
+	Admin admin;
 	Giver giver;
 	address[] beggarAddresses;
 	mapping (address => bool) isBeggar;
@@ -71,7 +75,7 @@ contract BlockBook {
     
     /*Modifier*/
     modifier onlyAdmin {
-        if ( msg.sender != admin )
+        if ( msg.sender != admin.addr )
             return;
         _;
     }
@@ -106,7 +110,8 @@ contract BlockBook {
 
 	/*Admin function*/////////////////////////////////////////////////////////
 	function BlockBook() {
-	    admin = msg.sender;
+	    admin.addr = msg.sender;
+        admin.name = "admin";
 	    
 	    // FOR TESTING
 	    addBeggar(msg.sender, "admin");
@@ -134,8 +139,9 @@ contract BlockBook {
         RoleUpdate(msg.sender, targetAddress, AccountRole.Giver);
     }
     
-    function transferAdmin(address targetAddress) onlyAdmin {
-        admin = targetAddress;
+    function transferAdmin(address targetAddress, string name) onlyAdmin {
+        admin.addr = targetAddress;
+        admin.name = name;
 
         RoleUpdate(msg.sender, targetAddress, AccountRole.Admin);
     }
@@ -296,7 +302,7 @@ contract BlockBook {
     function voteDelete(address targetAddress, bool vote)
         onlyTargetBeggar(targetAddress) returns (bool)
     {
-        if (msg.sender == admin)  
+        if (msg.sender == admin.addr)  
             beggars[targetAddress].removeVote.adminVote = vote;
         else if (msg.sender == giver.addr)  
             beggars[targetAddress].removeVote.giverVote = vote;
@@ -313,11 +319,15 @@ contract BlockBook {
     
     
 	/*Admin Getter*/////////////////////////////////////////////////////////
-	function listBeggar() constant returns (address[]) {
-	   return beggarAddresses;
-	}
+    function getAdminInfo() constant returns (address, string) {
+        return (admin.addr, admin.name);
+    }
 	
 	/*Beggar Getter*/////////////////////////////////////////////////////////
+    function listBeggar() constant returns (address[]) {
+       return beggarAddresses;
+    }
+
 	function getBeggarInfo(address targetAddress) onlyTargetBeggar(targetAddress)
 	    constant returns (string, uint24, uint24, uint24, uint24) 
     {
@@ -353,7 +363,7 @@ contract BlockBook {
     }
 	    
     /*Giver Getter*/////////////////////////////////////////////////////////
-	function getGiver() constant returns (address, string, uint24, uint24, uint24) {
+	function getGiverInfo() constant returns (address, string, uint24, uint24, uint24) {
 	    return (giver.addr, 
 	            giver.name, 
                 giver.budget, 

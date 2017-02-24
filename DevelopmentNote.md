@@ -51,6 +51,11 @@
   ` voteDelete(address targetAddress, bool vote)`   
 
 #### 5. UI:
+* Admin
+
+1. Get the Admin's data structure
+`getAdminInfo()`
+
 * Beggar
 
 1. Get the list of Beggar's addess
@@ -174,21 +179,24 @@
   
 **Every Fund is associated with a FundID. The FundID is the index of a Fund in a Giver's Fund array**  
 
-* Account
-  * Role
-  * Paid Requests
+* Admin
+* Giver
+* Beggar
 
-  
+### Issue
+1. Change storage.myAccount when switching account in MetaMask  
+
 ### Design rules
 * A Beggar's Requests is stored in an array under the Beggar's Account (Sandbox)
 * Rmoveal of Account requires multi-sig
+* To avoid unnecessary query, UI Contract function has two classes: refresh_ and get_. refresh_ queries and returns the latest info; get_ returns the info stored in UI Storage. 
 
 ### Possible improvements
 1. Request urgency: An attribute of a request that signifies urgency. When showing list, list according to urgency.
   * Will people use this?
 2. View protection: A Global view query can only be submitted by Giver. A Local view query can only be submiited by the Local storage owner.
   * An open book might be better?
-
+3. Utilize Solidity public modifier
 
   
 ### Vocabulary
