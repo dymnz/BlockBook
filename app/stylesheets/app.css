@@ -1,76 +1,77 @@
 body {
-  margin-left: 5%;
-  margin-right: 5%;
+  margin-left: 2%;
+  margin-right: 2%;
   margin-top: 1%;
   font-family: "Open Sans", sans-serif;
 }
 
-label {
-  display: inline-block;
-  width: 100px;
-}
-
-input {
-  width: 500px;
-  padding: 5px;
-  font-size: 16px;
-}
-
-button {
-  font-size: 16px;
-  padding: 5px;
-}
-
-h1, h2 {
+h1{
   display: inline;
   vertical-align: middle;
   margin-top: 0px;
   margin-bottom: 10px;  
-  padding: 0 0 0 0;
-}
-
-h2 {
-  color: #AAA;
-  font-size: 32px;
-}
-
-h3 {
-  font-weight: normal;
-  color: #AAA;
-  font-size: 24px;
+  padding: 0;
+  font-size: 5vmin;
 }
 
 h4 {
   display: inline;
-  font-weight: normal;
-  color: #999;
-  font-size: 12px;
+  color: #666;
+  font-size: 2vmin;
   position: absolute;
   bottom: 0;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   margin-left: 10px;
-  padding: 0 0 0 0 ;
+  padding: 0;  
+}
+
+#content {
+  margin-left: 2%;
+  margin-right: 2%;
+  margin-top: 1%;
+
+  min-height: 100px;
+  background-color: #eee;
+  border-style: solid;
 }
 
 .header {
   position: relative;
+  display: block;
 }
 
+/*Beggar table*/
 
-.tableTitle {
-  font-size: 16px;
-  padding: 5px;
-  font-weight: bold;
+#beggarTable {
+  display: block;
+  margin: 3vmin 3vmin;
 }
 
-.black {
-  color: black;
+.beggarInfo .cell:before {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
 }
 
-#balance {
-  color: black;
+.beggarInfo {
+  display: inline-block;
+  width: 47%;  
+  height: 10vh;
+
+  margin-top: 1vmin;
+  margin-bottom: 1vmin;
+  margin-left: 2%;  
 }
 
-.hint {
-  color: #666;
+.beggarInfo .cell {
+  display: inline-block;
+  width: 24%;
+  height: 100%;
+
+  border-radius: 7px;
+
+  text-align: center;
+  font-size: 3vmin;
 }
+

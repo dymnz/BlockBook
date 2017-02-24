@@ -18,16 +18,16 @@ var initContract = function (_blockBook, _web3) {
 	web3.eth.getAccounts(function(err, accs) {
 		if (err != null) {        
 			alert("There was an error fetching your accounts.");
-	    	throw "There was an error fetching your accounts.";
+	    	return;
 	 	}
 
 		if (accs.length == 0) {
 			alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
-			throw "Couldn't get any accounts! Make sure your Ethereum client is configured correctly.";
+			return;
 		}
-
 	  	storage.myAccount = accs[0];
 	});
+
 };
 
 var getMyAccount = function () {
@@ -139,10 +139,10 @@ var changeRequestStatus = function (targetAddress, requestIndex, toStatus)
 }
 
 /*Events*/
-var roleUpdateEvent = function () {
+var roleUpdateEvent = function (arg1, arg2) {
 	return BlockBook.deployed().then(function(instance) {            
 	    meta = instance;
-	    return meta.RoleUpdate();
+	    return meta.RoleUpdate(arg1, arg2);
 	});
 };
 
