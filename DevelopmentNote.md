@@ -89,31 +89,39 @@
 
   ```
     Implementation:
-    1. List beggar
-      * Show only active beggar
-    2. List request status
-      * Show only corresponding requests
-    3. Refresh Dispute/ApprovalPending/PaymentPending storage
-    4. Refresh UI
+      1. List beggar
+        - Show only active beggar
+      2. List request status
+        - Show only corresponding requests
+      3. Refresh Dispute/ApprovalPending/PaymentPending storage
+      4. Refresh UI
 
     Note: 3 and 4 should be done like refreshBeggarList(), where storage update is invoked by App and ContractFunction update storages as App pulls data. So in the program, storage update is in fact invoked by UI
-
     Note: List sort from old -> new
   ```
   * Beggar status page:
     1. Beggar info list
+  ```
+    Implementation:
+    1. List Beggar
+      * Address 0x0 means account deleted
+    2. Update Beggar info
+    3. Refresh BeggarList/Beggar's info storage
+    4. refresh UI
+
+    Note: 3 and 4 same as above
+  ```
   	
   * Fund list:
     1. Fund info list
-    
   ```
-      Implementation:
+    Implementation:
       1. List fund
       2. List fund status
       3. Refresh Giver's Fund storage    
       4. Refresh UI
 
-      Note: 3 and 4 like above
+    Note: 3 and 4 same as above
   ```
 
 ##### Toolbar 
@@ -128,28 +136,27 @@
     1. Approval list
     2. Payment list
     3. Pending list
-    
-    ```
+  ```
     Implementation:
-    Query event NewApproval
-    Quert event NewPaid
+      Query event NewApproval
+      Quert event NewPaid
 
-    1. List request status
-      * Show only corresponding requests
-    2. Refresh beggar requests[] storage
-    3. Refresh UI
-    
-    Note: 3 and 4 like above
-  
+      1. List request status
+        - Show only corresponding requests
+      2. Refresh beggar requests[] storage
+      3. Refresh UI
+      
+    Note: 3 and 4 same as above
     Note: The list sorts from new -> old, except for pending
-
-    ```
+  ```
 
 ##### Toolbar 
   1. Under every request:
   `changeRequestStatus()`
 
 ### Data structure
+
+    ## TO BE UPDATED, should reflect differnce in Contract and UI
 * Request 
   * Amount
   * Reason
@@ -173,8 +180,8 @@
 
   
 ### Design rules
-* A Beggar's Requests is stored in an array under the Beggar's Account
-* Rmoveal of Account/Request requires multi-sig
+* A Beggar's Requests is stored in an array under the Beggar's Account (Sandbox)
+* Rmoveal of Account requires multi-sig
 
 ### Possible improvements
 1. Request urgency: An attribute of a request that signifies urgency. When showing list, list according to urgency.
