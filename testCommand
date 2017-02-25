@@ -1,8 +1,9 @@
 window.App.changeRequestStatus("0x447e647c45c6da54b27df8e1fd5082d6c80c809d", 1, 1)
-window.App.addBeggar("0xfabda61c231ec7c1154140b520d47f9bd09e7693", "測試測試測試")
+window.App.addBeggar("0xfabda61c231ec7c1154140b520d47f9bd09e7693", "測試測試")
 window.App.getBeggar("0xfabda61c231ec7c1154140b520d47f9bd09e7693")
 window.App.refreshBeggarList()
+window.App.showBeggarList()
 window.App.addRequest(999, "test", "url")
 window.App.refreshGiverInfo()
-
+window.App.refreshBeggarRequestList('"0x6b99e0540a8bce5d10f578c5c4e5ee18e2feba79"')
 web3.eth.getAccounts(function(e,v){console.log(v)})

@@ -45,7 +45,7 @@ function Giver(addr, name, budget, approved, paid, funds, fundStatus) {
     this.funds = funds;
     this.fundStatus = fundStatus;
 }
-function Beggar(name, addressIndex, requested, approved, paid, requests, requestStatus, removeVote) {
+function Beggar(name, addressIndex, requested, approved, paid, requestList, requestStatusList, removeVote) {
     if (arguments.length != Beggar.length) {
         throw 'Not enough arguments: Beggar'
     }
@@ -55,8 +55,8 @@ function Beggar(name, addressIndex, requested, approved, paid, requests, request
     this.requested = requested;
     this.approved = approved;
     this.paid = paid;
-    this.requests = requests;
-    this.requestStatus = requestStatus;
+    this.requestList = requestList;
+    this.requestStatusList = requestStatusList;
     this.removeVote = removeVote;
 }
 

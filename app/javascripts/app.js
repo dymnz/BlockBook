@@ -96,13 +96,10 @@ window.App = {
     return ContractFunctions.refreshAdminInfo();
   },
 
-  refreshBeggarFundList: function () {
-    return ContractFunctions.refreshBeggarAddress().then(function(addresses) {
-      addresses.forEach(function(address, index){
-        ContractFunctions.refreshBeggarFund(address);
-      })
-      console.log(addresses);
-    }); 
+  refreshBeggarRequestList: function (address) {
+    return ContractFunctions.refreshBeggarRequestList().then( function () {
+      //TODO: show stuff here
+    });
   },
 
   refreshBeggarList: function () {

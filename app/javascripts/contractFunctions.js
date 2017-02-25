@@ -84,9 +84,24 @@ var getAdminInfo = function () {;
 	return storage.admin;
 }
 
+var refreshBeggarRequestList = function (address) {
+	var meta;
+
+	return BlockBook.deployed().then(function (instance) {
+		meta = instance;
+		return meta.listRequestStatus(address);
+	}).then(function (requstStatusList) {
+		//var index = findBeggarListIndex(address);
+		//storage.beggarList.info[index].requestStatusList = requestStatusList;
+		console.log(requestStatusList);
+		return "hi";
+	})
+}
+
 var refreshBeggarInfo = function (address) {
+	var meta;
 	return BlockBook.deployed().then(function(instance) {            
-	    meta = instance;
+		meta = instance;
 	    return meta.getBeggarInfo(address);
 	}).then(function(value) {
 		// Second value = index;
@@ -238,6 +253,7 @@ module.exports = {
 	refreshBeggarInfo: refreshBeggarInfo,
 	refreshGiverInfo: refreshGiverInfo,
 	refreshAdminInfo: refreshAdminInfo,
+	refreshBeggarRequestList: refreshBeggarRequestList,
 	getBeggarInfo: getBeggarInfo,
 	getGiverInfo: getGiverInfo,
 	getAdminInfo: getAdminInfo,
