@@ -1,6 +1,7 @@
 
-var pendingRequests = [];
-var disputedRequests = [];
+var approvalPendingRequestList = [];
+var paymentPendingRequestList = [];
+var disputedRequestList = [];
 
 var myAccount;
 var giverAddress;
@@ -13,8 +14,9 @@ var admin
 
 module.exports = {	
 	beggarList: beggarList,
-	pendingRequests: pendingRequests,
-	disputedRequests: disputedRequests,
+	approvalPendingRequestList: approvalPendingRequestList,
+	paymentPendingRequestList: paymentPendingRequestList,
+	disputedRequestList: disputedRequestList,
 	giverAddress: giverAddress,
 	adminAddress: adminAddress,
 	admin: admin,

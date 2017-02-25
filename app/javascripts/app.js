@@ -42,11 +42,15 @@ window.App = {
     }).then(function () {
       return self.findMyAccountRole();
     }).then(function () {
-      self.addEventListener(); 
+      return self.addEventListener(); 
+    }).then(function () {
+      console.log("TODO: Change this to switch statement for different role");
+      self.showBeggarList();
+      //self.showAddRequestModal();
     });   
 
-    //self.showBeggarList();
-    self.showAddRequestModal();
+    
+    
   },
 
   // setStatus: function(message) {
@@ -92,9 +96,16 @@ window.App = {
     return ContractFunctions.refreshAdminInfo();
   },
 
+  refreshBeggarFundList: function () {
+    return ContractFunctions.refreshBeggarAddress().then(function(addresses) {
+      addresses.forEach(function(address, index){
+        ContractFunctions.refreshBeggarFund(address);
+      })
+      console.log(addresses);
+    }); 
+  },
+
   refreshBeggarList: function () {
-    var self = this;
-  
     return ContractFunctions.refreshBeggarAddress().then(function(addresses) {
       addresses.forEach(function(address, index){
         ContractFunctions.refreshBeggarInfo(address);
@@ -118,11 +129,12 @@ window.App = {
       table.getElementsByClassName("requested")[index].innerHTML = beggar.requested;
       table.getElementsByClassName("approved")[index].innerHTML = beggar.approved;
       table.getElementsByClassName("paid")[index].innerHTML = beggar.paid;
-
+      table.getElementsByTagName("input")[index].innerHTML = address;
       var cells = table.children[index].children;
       for(var i = 0; i < cells.length; i++) {
         cells[i].style.backgroundColor = HashColor.hashColor(address, 80+3*i);
       }
+      
     });
   },
 
