@@ -1,5 +1,5 @@
-/* The Modal (background) */
-.modal {
+/* The list-modal (background) */
+.list-modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
@@ -12,8 +12,29 @@
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
-/* Modal Content/Box */
-.modal-content {
+/*Dispute*/
+.red {
+    background-color: rgba(0.5,0,0,0.4);
+}
+
+/*Waitng approval*/
+.green {
+    background-color: rgba(0,0.5,0,0.4);
+}
+
+/*Waiting payment*/
+.yellow {
+    background-color: rgba(0.5,0.5,0,0.4);
+}
+
+/*Paid*/
+.gray {
+    background-color: rgba(0,0,0,0.4);
+}
+
+
+/* list-modal Content/Box */
+.list-modal-content {
     max-width: 600px;
     background-color: #fefefe;
     margin: 15% auto; /* 15% from the top and centered */
@@ -24,51 +45,30 @@
     text-align: center;
 }
 
-.modal-content input {
-    display: inline-block;
-    width: 90%;
-    margin: 1vmin;
-    font-size: 3vmin;
-    padding: 10px;
-    border: solid 1px #c9c9c9;
-    transition: box-shadow 0.3s, border 0.3s;
-}
-
-.modal-content input:focus,
-.modal-content input.focus{
-  border: solid 1px #707070;
-  box-shadow: 0 0 5px 1px #969696;
-
-}
-
-.modal-content input[type="number"] {
-    text-align: right;
-}
-
-.modal-content .formTitle {
+.list-modal-content .formTitle {
     display: inline-block;
     font-size: 4vmin;
     font-weight: bold;
     text-align: center;
     color: #666;
 }
-.modal-content .formHeader {
+.list-modal-content .formHeader {
     margin-top: 20px;
 }
 
-.modal-content .formContent {
+.list-modal-content .formContent {
     margin-top: 15px;
     margin-bottom: 15px;
 }
 
-.modal-content .formContent .formText {
+.list-modal-content .formContent .formText {
     display: block;
     text-align: left;
     font-size: 2.5vmin;
     color: #555;
 }
 
-.modal-content .formButton {
+.list-modal-content .formButton {
     display: block;
     margin: auto;
     margin-top: 20px;

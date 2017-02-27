@@ -1,28 +1,10 @@
 pragma solidity ^0.4.2;
 
 contract BlockBook {
-	
-	// mapping (address => uint) balances;
-	// event Transfer(address indexed _from, address indexed _to, uint256 _value);
-	// function sendCoin(address receiver, uint amount) returns(bool sufficient) {
-	// 	if (balances[msg.sender] < amount) return false;
-	// 	balances[msg.sender] -= amount;
-	// 	balances[receiver] += amount;
-	// 	Transfer(msg.sender, receiver, amount);
-	// 	return true;
-	// }
 
-	// function getBalanceInEth(address addr) returns(uint){
-	// 	return ConvertLib.convert(getBalance(addr),2);
-	// }
-
-	// function getBalance(address addr) returns(uint) {
-	// 	return balances[addr];
-	// }
 	enum AccountRole { Admin, Giver, Beggar }
 	enum FundStatus { Active, Removed }
-	enum RequestStatus { PendingApproval, Approved, Paid, Disputed, Removed }
-
+	enum RequestStatus { PendingApproval, Approved, Paid, Disputed, Removed, Rejected }
 
 	/*Entry struct*/
 	struct Request {
@@ -105,6 +87,7 @@ contract BlockBook {
     event NewDispute(address indexed _beggarAddress, uint24 _requestIndex);
     event NewApproval(address indexed _beggarAddress, uint24 _requestIndex);
     event NewPaid(address indexed _beggarAddress, uint24 _requestIndex);
+    event NewRejection(address indexed _beggarAddress, uint24 _requestIndex);
     event DisputeResolved(address indexed _beggarAddress, uint24 _requestIndex);
     event RoleUpdate(address indexed _from, address indexed _to, AccountRole indexed _role);
 
@@ -182,8 +165,11 @@ contract BlockBook {
             == RequestStatus.PendingApproval) {
             beggars[msg.sender].requestStatus[requestIndex] 
                 = RequestStatus.Removed;
-            return true;
+            beggars[msg.sender].requested 
+                -= beggars[msg.sender].requests[requestIndex].amount;
+
             NewRemove(msg.sender, uint24(requestIndex) );
+            return true;
         }
         
         if (beggars[msg.sender].requestStatus[requestIndex] 
@@ -194,10 +180,19 @@ contract BlockBook {
                 -= beggars[msg.sender].requests[requestIndex].amount;                
             giver.approved 
                 -= beggars[msg.sender].requests[requestIndex].amount;                
-            return true;
+            
             NewRemove(msg.sender, uint24(requestIndex) );
-        }        
-        
+            return true;
+        }
+
+        if (beggars[msg.sender].requestStatus[requestIndex] 
+            == RequestStatus.Rejected) {
+            beggars[msg.sender].requestStatus[requestIndex] 
+                = RequestStatus.Removed;
+
+            NewRemove(msg.sender, uint24(requestIndex) );
+            return true;            
+        }
     }
     
     
@@ -222,14 +217,16 @@ contract BlockBook {
     {
         if (requestIndex >= beggars[targetAddress].requests.length) return false;
         
-        // "PendingApproval" -> "Approved" or "Paid"
+        // "PendingApproval" -> "Approved" or "Paid" or "Rejected"
         if (beggars[targetAddress].requestStatus[requestIndex] 
             == RequestStatus.PendingApproval) {
             if (toStatus == RequestStatus.Approved) {
                 beggars[targetAddress].requestStatus[requestIndex] 
                     = RequestStatus.Approved;
-                beggars[targetAddress].approved 
-                    += beggars[targetAddress].requests[requestIndex].amount;                       
+                beggars[targetAddress].requested 
+                    -= beggars[targetAddress].requests[requestIndex].amount;
+                beggars[targetAddress].approved
+                    += beggars[targetAddress].requests[requestIndex].amount;                      
                 giver.approved 
                     += beggars[targetAddress].requests[requestIndex].amount;
 				NewApproval(targetAddress, requestIndex);  
@@ -237,12 +234,20 @@ contract BlockBook {
             } else if (toStatus == RequestStatus.Paid) {
                 beggars[targetAddress].requestStatus[requestIndex] 
                     = RequestStatus.Paid;
+                beggars[targetAddress].requested 
+                    -= beggars[targetAddress].requests[requestIndex].amount;                    
                 beggars[targetAddress].paid 
                     += beggars[targetAddress].requests[requestIndex].amount;
                 giver.paid 
                     += beggars[targetAddress].requests[requestIndex].amount; 
 				NewPaid(targetAddress, requestIndex);
+            } else if (toStatus == RequestStatus.Rejected) {
+                beggars[targetAddress].requestStatus[requestIndex] 
+                    = RequestStatus.Rejected;
+                beggars[targetAddress].requested 
+                    -= beggars[targetAddress].requests[requestIndex].amount;  
 
+                NewRejection(targetAddress, requestIndex);    
             } else {
                 return false;
             }

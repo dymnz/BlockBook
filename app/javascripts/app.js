@@ -1,6 +1,8 @@
 // Import the page's CSS. Webpack will know what to do with it.
 import "../stylesheets/app.css";
-import "../stylesheets/modal.css";
+import "../stylesheets/request-modal.css";
+import "../stylesheets/list-modal.css";
+import "../stylesheets/beggarInfo.css";
 
 // Import libraries we need.
 import { default as Web3} from 'web3';
@@ -45,13 +47,16 @@ window.App = {
       return self.addEventListener(); 
     }).then(function () {
       console.log("TODO: Change this to switch statement for different role");
-      self.showBeggarList();
-      //self.showAddRequestModal();
-    });   
 
-    
-    
+      self.setupRequestModal();
+      self.setupRequestListModal();
+
+      self.showGiverDefaultPage();
+      //self.showAddRequestModal();
+      //self.showRequestListModal();      
+    });
   },
+
 
   // setStatus: function(message) {
   //   var status = document.getElementById("status");
@@ -67,9 +72,21 @@ window.App = {
       console.log("You are Admin");
     } else if (ContractFunctions.isGiver(myAccount)) {
       console.log("You are Giver");
+      self.showGiverDefaultPage();
     } else if (ContractFunctions.isBeggar(myAccount)){
       console.log("You are Beggar");
     }
+  },
+
+  showGiverDefaultPage: function () {
+    var self = this;
+    self.showBeggarList();
+
+    //TODO: inject beggar modal
+  },
+
+  showBeggarDefaultPage: function () {
+    //TODO: inject request modal
   },
 
   resetBeggarTable: function (count) {
@@ -96,10 +113,24 @@ window.App = {
     return ContractFunctions.refreshAdminInfo();
   },
 
-  refreshBeggarRequestList: function (address) {
-    return ContractFunctions.refreshBeggarRequestList().then( function () {
-      //TODO: show stuff here
+  refreshRequestList: function (address) {
+    var self = this;
+    var promises = [];
+    var list;
+    return ContractFunctions.refreshBeggarRequestList(address).then( function (requestStatusList) {
+      list = requestStatusList;
+      requestStatusList.forEach(function (status, index) {
+        promises.push( self.refreshRequestInfo(address, index) );
+      });
+      return Promise.all(promises).then(function () {
+        ContractFunctions.setBeggarUptodate(address, true);
+        return list;
+      });
     });
+  },
+
+  refreshRequestInfo: function (address, requestIndex) { 
+    return ContractFunctions.refreshRequestInfo(address, requestIndex);
   },
 
   refreshBeggarList: function () {
@@ -126,7 +157,14 @@ window.App = {
       table.getElementsByClassName("requested")[index].innerHTML = beggar.requested;
       table.getElementsByClassName("approved")[index].innerHTML = beggar.approved;
       table.getElementsByClassName("paid")[index].innerHTML = beggar.paid;
-      table.getElementsByTagName("input")[index].innerHTML = address;
+      table.getElementsByClassName("address")[index].value = address;
+
+      // Inject modal showing function
+      table.getElementsByClassName("name")[index].addEventListener(
+        'click', function () {
+        self.showRequestList(address);
+      });
+
       var cells = table.children[index].children;
       for(var i = 0; i < cells.length; i++) {
         cells[i].style.backgroundColor = HashColor.hashColor(address, 80+3*i);
@@ -135,10 +173,70 @@ window.App = {
     });
   },
 
+  resetRequestModal: function (count) {
+      var modal = document.getElementsByClassName("list-modal-content")[0];
+      var content = modal.getElementsByClassName("formContent")[0];
+      // Remove list
+      content.innerHTML = "";
+
+      // Construct list
+      for (var r = 0 ; r < count; r++) {
+        content.innerHTML += UIBlocks.requestInfo;  
+      }
+  },
+
+  showRequestList: function (address) {
+    var self = this;
+    var infoList = [];
+    var statusList = [];
+
+    
+    if (ContractFunctions.getBeggarUptodate(address) != true) {
+      self.refreshRequestList(address).then(function (sList) {
+        statusList = sList;        
+        sList.forEach(function (status, index) {
+          infoList.push(ContractFunctions.getRequestInfo(address, index));
+        });
+        self.populateRequestList(statusList, infoList);
+        self.showRequestListModal();
+      });
+    } else {
+      infoList = ContractFunctions.getBeggarInfo(address).requestList;
+      statusList = ContractFunctions.getBeggarInfo(address).requestStatusList;
+      self.populateRequestList(statusList, infoList);
+      self.showRequestListModal();
+    }
+  },
+
+  populateRequestList: function (statusList, infoList) {
+    var self = this;
+     
+    self.resetRequestModal(statusList.length);
+    var modal = document.getElementsByClassName("list-modal-content")[0];
+    console.log(modal);
+    var list = modal.getElementsByClassName("formContent")[0];
+    console.log(list);
+
+    statusList.forEach(function (status, index) {
+      var ind = statusList.length - index - 1;
+      list.getElementsByClassName("amount")[ind].innerHTML 
+        = infoList[index].amount;
+        console.log(list.getElementsByClassName("amount")[ind]);
+      list.getElementsByClassName("reason")[ind].innerHTML 
+        = infoList[index].reason;
+    });
+  },
+
   showAddRequestModal: function () {       
     var modal = document.getElementById('requestModal');
     modal.style.display = "block";
   },
+
+  showRequestListModal: function () {       
+    var modal = document.getElementById('listModal');
+    modal.style.display = "block";
+  },
+
 
   addBeggar: function (address, name) {    
     ContractFunctions.addBeggar(address, name).then(function(result) {
@@ -173,6 +271,51 @@ window.App = {
   },
   
   /*UI function*/
+  setupRequestModal: function () { 
+    var self = this;
+
+    var requestModal = document.getElementById('requestModal');
+    var close = requestModal.getElementsByClassName("close")[0];
+    var button = requestModal.getElementsByClassName("formButton")[0];
+    var status = requestModal.getElementsByClassName("status")[0];
+    close.onclick = function() {
+      requestModal.style.display = "none";      
+    };
+
+    button.onclick =  function() {
+      var amount = requestModal.getElementsByClassName("amount")[0].value;
+      var reason = requestModal.getElementsByClassName("reason")[0].value;
+
+      if (amount <= 0) {
+        status.innerHTML = "Amount needs to be larger than 0";
+      } else {
+        self.addRequest(amount, reason, "");  
+        requestModal.style.display = "none";
+      }      
+    };
+
+    window.onclick = function(event) {
+      if (event.target == requestModal) {
+          requestModal.style.display = "none";
+      }
+    };
+  },
+
+  setupRequestListModal: function () {
+    var self = this;
+
+    var listModal = document.getElementById('listModal');
+    var span = listModal.getElementsByClassName("close")[0];
+    span.onclick = function() {
+      listModal.style.display = "none";      
+    };
+    window.onclick = function(event) {
+      if (event.target == listModal) {
+          listModal.style.display = "none";
+      }
+    };
+  },
+
   addEventListener: function () {
     var self = this;
 
@@ -246,29 +389,6 @@ window.App = {
     }).catch(function(e) {
       throw e;
     });       
-
-
-    var requestModal = document.getElementById('requestModal');
-    var span = document.getElementsByClassName("close")[0];
-    var button = document.getElementsByClassName("formButton")[0];
-    span.onclick = function() {
-      requestModal.style.display = "none";      
-    };
-
-    button.onclick =  function() {
-      requestModal.style.display = "none";
-      var amount = requestModal.getElementsByClassName("amount")[0].value;
-      var reason = requestModal.getElementsByClassName("reason")[0].value;
-      self.addRequest(amount, reason, "");
-    };
-
-    window.onclick = function(event) {
-      if (event.target == requestModal) {
-          requestModal.style.display = "none";
-      }
-    };
-
-    
   }
 
 

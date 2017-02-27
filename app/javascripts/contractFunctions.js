@@ -48,6 +48,7 @@ var refreshBeggarAddress = function () {
 		});
 
 		storage.beggarList.info = new Array(cleanedAddresses.len).fill(0);
+		storage.beggarList.uptodate = new Array(cleanedAddresses.len).fill(0);
 	    storage.beggarList.address = cleanedAddresses;
 	    return cleanedAddresses;
 	});
@@ -90,13 +91,36 @@ var refreshBeggarRequestList = function (address) {
 	return BlockBook.deployed().then(function (instance) {
 		meta = instance;
 		return meta.listRequestStatus(address);
-	}).then(function (requstStatusList) {
-		//var index = findBeggarListIndex(address);
-		//storage.beggarList.info[index].requestStatusList = requestStatusList;
-		console.log(requestStatusList);
-		return "hi";
-	})
+	}).then(function (requestStatusList) {
+		var index = findBeggarListIndex(address);
+		storage.beggarList.info[index].requestStatusList = requestStatusList;
+		storage.beggarList.info[index].requestList 
+			= new Array(requestStatusList.len).fill(0);
+		return requestStatusList;
+	});
 }
+
+var refreshRequestInfo = function (address, requestIndex) {
+		var meta;
+
+	return BlockBook.deployed().then(function (instance) {
+		meta = instance;
+		return meta.getRequestInfo(address, requestIndex);
+	}).then(function (request) {
+		var index = findBeggarListIndex(address);
+		storage.beggarList.info[index].requestList[requestIndex] = 
+			new struct.Request(request[0], request[1], request[2], 
+				request[3], address, requestIndex);
+
+		return storage.beggarList.info[index].requestList[requestIndex];
+	});
+}
+
+var getRequestInfo = function (address, requestIndex) {	
+	var index = findBeggarListIndex(address);
+	return storage.beggarList.info[index].requestList[requestIndex];
+}
+
 
 var refreshBeggarInfo = function (address) {
 	var meta;
@@ -110,12 +134,13 @@ var refreshBeggarInfo = function (address) {
 		index = findBeggarListIndex(address);
 
 		storage.beggarList.info[index] = beggar;
+		storage.beggarList.uptodate[index] = false;
 	    return storage.beggarList.info[index];
 	});
 }
 
 var findBeggarListIndex = function (_address) {	
-	index = storage.beggarList.address.findIndex(function (address) {
+	var index = storage.beggarList.address.findIndex(function (address) {
 		return address == _address;
 	});
 
@@ -123,9 +148,20 @@ var findBeggarListIndex = function (_address) {
 }
 
 var getBeggarInfo = function (address) {
-	index = findBeggarListIndex(address);
+	var index = findBeggarListIndex(address);
 	return storage.beggarList.info[index];
 }
+
+var setBeggarUptodate = function (address, status) {
+	var index = findBeggarListIndex(address);
+	storage.beggarList.uptodate[index] = status;
+}
+
+var getBeggarUptodate = function (address) {
+	var index = findBeggarListIndex(address);
+	return storage.beggarList.uptodate[index];
+}
+
 
 var isBeggar = function (address) {
 	return findBeggarListIndex(address) != -1;
@@ -228,7 +264,8 @@ var RequestStatus = {
 	Approved: 1,
 	Paid: 2,
 	Disputed: 3,
-	Removed: 4
+	Removed: 4,
+	Rejected: 5
 };
 
 var FundStatus = {
@@ -254,11 +291,15 @@ module.exports = {
 	refreshGiverInfo: refreshGiverInfo,
 	refreshAdminInfo: refreshAdminInfo,
 	refreshBeggarRequestList: refreshBeggarRequestList,
+	refreshRequestInfo: refreshRequestInfo,
+	getRequestInfo: getRequestInfo,
 	getBeggarInfo: getBeggarInfo,
 	getGiverInfo: getGiverInfo,
 	getAdminInfo: getAdminInfo,
 	getMyAccount: getMyAccount,
 	roleUpdateEvent: roleUpdateEvent,
+	setBeggarUptodate: setBeggarUptodate,
+	getBeggarUptodate: getBeggarUptodate,
 	isBeggar: isBeggar,
 	isGiver: isGiver,
 	isAdmin: isAdmin

@@ -7,7 +7,7 @@ var myAccount;
 var giverAddress;
 var adminAddress;
 
-var beggarList = {address: [], info: []};
+var beggarList = {address: [], info: [], uptodate: []};
 var giver;
 var admin
 

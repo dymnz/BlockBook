@@ -1,0 +1,109 @@
+/* The request-modal (background) */
+.request-modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* request-modal Content/Box */
+.request-modal-content {
+    max-width: 600px;
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    border-radius: 10px;
+    text-align: center;
+}
+
+.request-modal-content input {
+    display: inline-block;
+    width: 90%;
+    margin: 1vmin;
+    font-size: 3vmin;
+    padding: 10px;
+    border: solid 1px #c9c9c9;
+    transition: box-shadow 0.3s, border 0.3s;
+}
+
+.request-modal-content input:focus,
+.request-modal-content input.focus{
+  border: solid 1px #707070;
+  box-shadow: 0 0 5px 1px #969696;
+
+}
+
+.request-modal-content input[type="number"] {
+    text-align: right;
+}
+
+.request-modal-content .formTitle {
+    display: inline-block;
+    font-size: 4vmin;
+    font-weight: bold;
+    text-align: center;
+    color: #666;
+}
+.request-modal-content .formHeader {
+    margin-top: 20px;
+}
+
+.request-modal-content .formContent {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.request-modal-content .formContent .formText {
+    display: block;
+    text-align: left;
+    font-size: 2.5vmin;
+    color: #555;
+}
+
+.request-modal-content .status {
+    font-size: 3vmin;
+    color: #e33;
+}
+
+.request-modal-content .formButton {
+    display: block;
+    margin: auto;
+    margin-top: 20px;
+    padding: 15px;
+    width: 98%;
+    font-size: 3vmin;  
+    border-radius: 6px;  
+    box-shadow: none;
+    border: none;
+    background-color: #9e9; 
+    margin-bottom: 10px;
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 5vmin;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
