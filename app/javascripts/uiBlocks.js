@@ -11,20 +11,54 @@ var beggarTable = `
 	        <div id="beggarTable">
 	        </div>`;
 
-var requestInfo = `
-				<div class="requestCell">
-                    <div class="info">
-                        <div class="amount"></div>
-                        <div class="reason"></div>                        
-                    </div>
-                    <div class="option">
-                        <button>Approve</button>
-                        <button>Paid</button>
-                        <button>Reject</button>
-                    </div>
-                    <input type="hidden" id="address"/>
-                    <input type="hidden" id="requestIndex"/>
-                </div>`;
+var requestInfo = {
+    block: 
+    `
+    <div class="requestInfo">
+        <div class="amount cell"></div>
+        <div class="other cell">
+            <div class="reason"></div>                    
+            <div class="option"></div>
+        </div>                    
+        <input type="hidden" class="address"/>
+        <input type="hidden" class="requestIndex"/>
+    </div>`,
+    innerBlock:
+    `
+    <div class="amount cell"></div>
+    <div class="other cell">
+        <div class="reason"></div>                    
+        <div class="option"></div>
+    </div>                    
+    <input type="hidden" class="address"/>
+    <input type="hidden" class="requestIndex"/>
+    `,
+    approvalPendingOptions: 
+    `
+    <div class="approvalPendingOptions">
+        <button class="approve yellow">Approve</button>
+        <button class="paid gray">Paid</button>
+        <button class="reject red">Reject</button>
+    </div>
+    `,
+    paymentPendingOptions: 
+    `
+    <div class="paymentPendingOptions">
+        <button class="paid gray">Paid</button>
+    </div>
+    `,    
+    disputedOptions: 
+    `
+    <div class="disputedOptions">
+        <button class="approve yellow">Approve</button>
+        <button class="paid gray">Paid</button>
+    </div>
+    `,    
+
+
+};
+
+
 
 module.exports = {
 	beggarInfo: beggarInfo,

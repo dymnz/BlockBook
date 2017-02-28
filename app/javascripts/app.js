@@ -52,7 +52,7 @@ window.App = {
       self.setupRequestListModal();
 
       self.showGiverDefaultPage();
-      //self.showAddRequestModal();
+      self.showAddRequestModal();
       //self.showRequestListModal();      
     });
   },
@@ -181,49 +181,119 @@ window.App = {
 
       // Construct list
       for (var r = 0 ; r < count; r++) {
-        content.innerHTML += UIBlocks.requestInfo;  
+        content.innerHTML += UIBlocks.requestInfo.block;  
       }
   },
 
-  showRequestList: function (address) {
+  showRequestList: function (address, force) {
     var self = this;
     var infoList = [];
     var statusList = [];
-
-    
-    if (ContractFunctions.getBeggarUptodate(address) != true) {
+    var beggarInfo;
+    if (ContractFunctions.getBeggarUptodate(address) != true || force) {
       self.refreshRequestList(address).then(function (sList) {
         statusList = sList;        
         sList.forEach(function (status, index) {
           infoList.push(ContractFunctions.getRequestInfo(address, index));
         });
-        self.populateRequestList(statusList, infoList);
+        beggarInfo = ContractFunctions.getBeggarInfo(address);
+        self.populateRequestList(beggarInfo, statusList, infoList);
         self.showRequestListModal();
       });
     } else {
       infoList = ContractFunctions.getBeggarInfo(address).requestList;
       statusList = ContractFunctions.getBeggarInfo(address).requestStatusList;
-      self.populateRequestList(statusList, infoList);
+      beggarInfo = ContractFunctions.getBeggarInfo(address);
+      self.populateRequestList(beggarInfo, statusList, infoList);
       self.showRequestListModal();
     }
   },
 
-  populateRequestList: function (statusList, infoList) {
+  refreshRequestCellInfo: function (cell, info, status) {
+    console.log(cell);
+    cell.className = "requestInfo";
+    switch (Number(status)) {
+      case ContractFunctions.RequestStatus.PendingApproval:
+        cell.getElementsByClassName("option")[0].innerHTML 
+          = UIBlocks.requestInfo.approvalPendingOptions;         
+        cell.className += " green";
+        cell.getElementsByClassName("approve")[0].addEventListener(
+          'click', function () {
+          self.changeRequestStatus(beggarInfo.addr,
+             index, ContractFunctions.RequestStatus.Approved)
+            .then(function () {
+              self.refreshRequestInfo(cell, 
+                infoList[index], ContractFunctions.RequestStatus.Approved);
+             }).catch(function (e) {
+                console.log(e);                 
+             });
+        });
+      break;
+      case ContractFunctions.RequestStatus.Approved:
+      cell.getElementsByClassName("option")[0].innerHTML 
+          = UIBlocks.requestInfo.paymentPendingOptions; 
+      cell.className += " yellow";
+      break;
+      case ContractFunctions.RequestStatus.Disputed:
+        cell.getElementsByClassName("option")[0].innerHTML 
+          = UIBlocks.requestInfo.disputedOptions; 
+        cell.className += " red";
+      break;
+    }  
+
+  },
+
+  populateRequestList: function (beggarInfo, statusList, infoList) {
     var self = this;
      
     self.resetRequestModal(statusList.length);
     var modal = document.getElementsByClassName("list-modal-content")[0];
-    console.log(modal);
     var list = modal.getElementsByClassName("formContent")[0];
-    console.log(list);
+
+    modal.getElementsByClassName("formTitle")[0].innerHTML = beggarInfo.name;
 
     statusList.forEach(function (status, index) {
       var ind = statusList.length - index - 1;
-      list.getElementsByClassName("amount")[ind].innerHTML 
+      var cell = list.getElementsByClassName("requestInfo")[ind];
+
+      cell.getElementsByClassName("amount")[0].innerHTML 
         = infoList[index].amount;
-        console.log(list.getElementsByClassName("amount")[ind]);
-      list.getElementsByClassName("reason")[ind].innerHTML 
+      cell.getElementsByClassName("reason")[0].innerHTML 
         = infoList[index].reason;
+      cell.getElementsByClassName("address")[0].value 
+        = beggarInfo.addr;
+      cell.getElementsByClassName("requestIndex")[0].value 
+        = index;
+
+      switch (Number(status)) {
+        case ContractFunctions.RequestStatus.PendingApproval:
+          cell.getElementsByClassName("option")[0].innerHTML 
+            = UIBlocks.requestInfo.approvalPendingOptions;         
+          cell.className += " green";
+          cell.getElementsByClassName("approve")[0].addEventListener(
+            'click', function () {
+            self.changeRequestStatus(beggarInfo.addr,
+               index, ContractFunctions.RequestStatus.Approved)
+              .then(function () {
+                self.refreshRequestCellInfo(cell, 
+                  infoList[index], ContractFunctions.RequestStatus.Approved);
+               }).catch(function (e) {
+                  console.log(e);                 
+               });
+          });
+        break;
+        case ContractFunctions.RequestStatus.Approved:
+        cell.getElementsByClassName("option")[0].innerHTML 
+            = UIBlocks.requestInfo.paymentPendingOptions; 
+        cell.className += " yellow";
+        break;
+        case ContractFunctions.RequestStatus.Disputed:
+          cell.getElementsByClassName("option")[0].innerHTML 
+            = UIBlocks.requestInfo.disputedOptions; 
+          cell.className += " red";
+        break;
+      }  
+
     });
   },
 
@@ -246,14 +316,10 @@ window.App = {
     });
   },
 
-  sendRequest: function () {
-    console.log("testssssssssssssssssssssssssssssssss");
-  },
-
   /*Beggar function*/
   addRequest: function (amount, reason, receiptURL) {
     ContractFunctions.addRequest(amount, reason, receiptURL).then(function(result) {
-      console.log(result);
+      //console.log("addRequest: " + result);
     }).catch(function(e) {
       console.log(e);
     });
@@ -262,11 +328,9 @@ window.App = {
   /*Giver function*/
   changeRequestStatus: function (targetAddress, requestIndex, toStatus)  
   {
-    ContractFunctions.changeRequestStatus(targetAddress, requestIndex, 
+    return ContractFunctions.changeRequestStatus(targetAddress, requestIndex, 
       toStatus).then(function(result) {
-      console.log(result);
-    }).catch(function(e) {
-      console.log(e);
+      console.log("Done" + result);
     });
   },
   
@@ -293,12 +357,6 @@ window.App = {
         requestModal.style.display = "none";
       }      
     };
-
-    window.onclick = function(event) {
-      if (event.target == requestModal) {
-          requestModal.style.display = "none";
-      }
-    };
   },
 
   setupRequestListModal: function () {
@@ -308,11 +366,6 @@ window.App = {
     var span = listModal.getElementsByClassName("close")[0];
     span.onclick = function() {
       listModal.style.display = "none";      
-    };
-    window.onclick = function(event) {
-      if (event.target == listModal) {
-          listModal.style.display = "none";
-      }
     };
   },
 
@@ -332,8 +385,8 @@ window.App = {
     // NewApproval event
     ContractFunctions.newApprovalEvent().then( function(event){
       event.watch(function(err, result){
-        console.log("NewApproval");
         self.refreshBeggarList();
+        //self.showRequestList(result.args._beggarAddress);
         //TODO: self.refreshApprovalPeningList();
         //TODO: self.refreshPaymentPeningList();
       })
@@ -388,9 +441,19 @@ window.App = {
       })
     }).catch(function(e) {
       throw e;
-    });       
-  }
+    });     
 
+    window.onclick = function(event) {
+      var requestModal = document.getElementById('requestModal');
+      var listModal = document.getElementById('listModal');    
+      if (event.target == requestModal) {
+          requestModal.style.display = "none";
+      } else if (event.target == listModal) {
+        listModal.style.display = "none";
+      }
+    };
+  
+  }
 
 };
 

@@ -9,7 +9,7 @@ function Request(amount, reason, receiptURL, createdOn, addr, index) {
     this.createdOn = createdOn;
 
     // For UI convenience
-    this.addr = addr
+    this.addr = addr;
     this.index = index;
 }
 function Fund(amount, reason) {
@@ -45,7 +45,7 @@ function Giver(addr, name, budget, approved, paid, funds, fundStatus) {
     this.funds = funds;
     this.fundStatus = fundStatus;
 }
-function Beggar(name, addressIndex, requested, approved, paid, requestList, requestStatusList, removeVote) {
+function Beggar(name, addressIndex, requested, approved, paid, requestList, requestStatusList, removeVote, addr) {
     if (arguments.length != Beggar.length) {
         throw 'Not enough arguments: Beggar'
     }
@@ -58,6 +58,9 @@ function Beggar(name, addressIndex, requested, approved, paid, requestList, requ
     this.requestList = requestList;
     this.requestStatusList = requestStatusList;
     this.removeVote = removeVote;
+
+    // For UI convenience
+    this.addr = addr;
 }
 
 module.exports = {

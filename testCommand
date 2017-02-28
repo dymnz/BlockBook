@@ -8,3 +8,9 @@ window.App.refreshGiverInfo()
 window.App.refreshRequestList("0xbc20de6bdede0f8ceb79b875ce875895cec45dc9")
 web3.eth.getAccounts(function(e,v){console.log(v)})
 window.App.refreshRequestInfo("0xbc20de6bdede0f8ceb79b875ce875895cec45dc9", 0)
+
+web3.eth.sendTransaction({from:web3.eth.coinbase, to:"0x3653966499aC4A464d2b97f8A80c0189846b458A", value: web3.toWei(50, "ether")})
+
+
+0x0ED006f6d542fDdC7F1f8A88680f207AEfE3c8E6
+testrpc --account="0x1702b05dd939d62aaad910a5a6b9a37a024e00443dc525f0b1c7db75c83275bf,100000000000000000000" -u 0

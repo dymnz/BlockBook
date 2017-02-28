@@ -88,15 +88,17 @@
 }
 
 /* The Close Button */
-.close {
+.request-modal-content .close {
     color: #aaa;
     float: right;
     font-size: 5vmin;
     font-weight: bold;
+    position: relative;
+    top: -5vmin;
 }
 
-.close:hover,
-.close:focus {
+.request-modal-content .close:hover,
+.request-modal-content .close:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;

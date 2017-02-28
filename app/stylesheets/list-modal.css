@@ -10,34 +10,14 @@
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    min-width: 700px;
 }
-
-/*Dispute*/
-.red {
-    background-color: rgba(0.5,0,0,0.4);
-}
-
-/*Waitng approval*/
-.green {
-    background-color: rgba(0,0.5,0,0.4);
-}
-
-/*Waiting payment*/
-.yellow {
-    background-color: rgba(0.5,0.5,0,0.4);
-}
-
-/*Paid*/
-.gray {
-    background-color: rgba(0,0,0,0.4);
-}
-
 
 /* list-modal Content/Box */
 .list-modal-content {
-    max-width: 600px;
+    max-width: 700px;
     background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
+    margin: 10% auto; /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
     width: 80%; /* Could be more or less, depending on screen size */
@@ -46,59 +26,116 @@
 }
 
 .list-modal-content .formTitle {
-    display: inline-block;
+    display: block;
     font-size: 4vmin;
     font-weight: bold;
-    text-align: center;
     color: #666;
-}
-.list-modal-content .formHeader {
-    margin-top: 20px;
 }
 
 .list-modal-content .formContent {
     margin-top: 15px;
     margin-bottom: 15px;
+    text-align: center;
 }
 
-.list-modal-content .formContent .formText {
-    display: block;
-    text-align: left;
-    font-size: 2.5vmin;
-    color: #555;
+
+.list-modal-content .requestInfo {
+    display: inline-block;
+    padding-top: 1vh;
+    margin-top: 1vh;
+    width: 90%;
+    height: 15vh;
+    
+    font-size: 3vmin;
+    border-radius: 7px;
 }
 
-.list-modal-content .formButton {
+.list-modal-content .requestInfo .cell {
+    display: inline-block;
+    height: 90%;
+    overflow: hidden;
+}
+
+.list-modal-content .requestInfo .amount:before {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
+}
+
+.list-modal-content .requestInfo .amount {
+    width: 20%;
+    border: 3px solid #333;
+    border-radius: 5px;
+}
+
+.list-modal-content .requestInfo .other{
+    width: 70%;
+    font-size: 3vmin;
+}
+
+.list-modal-content .requestInfo .other .reason{
     display: block;
-    margin: auto;
-    margin-top: 20px;
-    padding: 15px;
-    width: 98%;
-    font-size: 3vmin;  
+    height: 60%;
+    padding: 0 2px 0 2px;
+    word-wrap: break-word;
+    overflow: scroll;
+}
+
+.list-modal-content .requestInfo .other .option {
+    display: table;
+    margin-top: 3px;
+    table-layout: fixed;
+    
+    border-radius: 7px;
+    height: 30%;
+    width:100%;
+}
+
+.list-modal-content .option button {
+    display: table-cell;
+    height: 3vh;
     border-radius: 6px;  
     box-shadow: none;
     border: none;
-    background-color: #9e9;
-    
 }
 
+/*Dispute*/
+.red {
+    background-color: #dd5555;
+}
+
+/*Waitng approval*/
+.green {
+    background-color: #77dd77;
+}
+
+/*Waiting payment*/
+.yellow {
+    background-color: #dddd55;
+}
+
+/*Paid*/
+.gray {
+    background-color: #cccccc;
+}
+
+
+
 /* The Close Button */
-.close {
+.list-modal-content .close {
+    display: block;
     color: #aaa;
     float: right;
     font-size: 5vmin;
     font-weight: bold;
+    position: relative;
+    top: -2vmin;
 }
 
-.close:hover,
-.close:focus {
+.list-modal-content .close:hover,
+.list-modal-content .close:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
-}
-
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
 }

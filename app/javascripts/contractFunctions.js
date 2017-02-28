@@ -130,7 +130,7 @@ var refreshBeggarInfo = function (address) {
 	}).then(function(value) {
 		// Second value = index;
 		var beggar = new struct.Beggar(value[0],
-		value[1], value[2], value[3], value[4], [], [], []);
+		value[1], value[2], value[3], value[4], [], [], [], address);
 		index = findBeggarListIndex(address);
 
 		storage.beggarList.info[index] = beggar;
