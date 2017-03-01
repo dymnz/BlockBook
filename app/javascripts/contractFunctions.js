@@ -197,7 +197,7 @@ var addRequest = function (amount, reason, receiptURL) {
 	return BlockBook.deployed().then(function(instance) {            
 	    meta = instance;
 	    return meta.addRequest(amount, reason, receiptURL, {from: storage.myAccount, gas: 200000});
-	});
+	});plusButton
 }
 
 /*Giver function*/

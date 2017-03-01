@@ -72,6 +72,7 @@
 .list-modal-content .requestInfo .other{
     width: 70%;
     font-size: 3vmin;
+    overflow: hidden;
 }
 
 .list-modal-content .requestInfo .other .reason{
@@ -79,7 +80,7 @@
     height: 60%;
     padding: 0 2px 0 2px;
     word-wrap: break-word;
-    overflow: scroll;
+    overflow: hidden;
 }
 
 .list-modal-content .requestInfo .other .option {
@@ -98,6 +99,8 @@
     border-radius: 6px;  
     box-shadow: none;
     border: none;
+    font-size: 2.5vmin;
+    margin: 0;
 }
 
 /*Dispute*/
@@ -117,7 +120,7 @@
 
 /*Paid*/
 .gray {
-    background-color: #cccccc;
+    background-color: #dddddd;
 }
 
 

@@ -29,10 +29,34 @@ h4 {
   margin-left: 10px;
   padding: 0;  
 }
+div {
+  cursor: default;
+}
 
 .header {
   position: relative;
   display: block;
+}
+
+.header .button {
+  float: right;
+  font-size: 5vh;
+  border-radius: 6px;
+  box-shadow: none;
+  padding: 1px 10px 1px 10px;
+  margin: 3px 10px 0 10px;
+}
+
+.header .addRequest {
+  background-color: #ada;
+
+}
+
+.header .button:hover,
+.header .button:focus {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 #content {
@@ -48,6 +72,8 @@ h4 {
   background-color: #eee;
   border-radius: 10px;
 }
+
+
 
 
 /*Beggar table*/

@@ -1,3 +1,10 @@
+var headerOption = {
+    plusButton: 
+    `
+    <div class="button plus">&#43;</div>
+    `,
+};
+
 var beggarInfo = `
 			<div class="beggarInfo">
                 <div class="cell name"></div>
@@ -53,9 +60,7 @@ var requestInfo = {
         <button class="approve yellow">Approve</button>
         <button class="paid gray">Paid</button>
     </div>
-    `,    
-
-
+    `,
 };
 
 
@@ -63,5 +68,6 @@ var requestInfo = {
 module.exports = {
 	beggarInfo: beggarInfo,
 	beggarTable: beggarTable,
-	requestInfo: requestInfo
+	requestInfo: requestInfo,
+    headerOption: headerOption
 }

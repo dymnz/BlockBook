@@ -41,39 +41,6 @@ var showRequestListModal = function () {
     modal.style.display = "block";
 };
 
-var setupRequestModal = function () { 
-    var self = this;
-
-    var requestModal = document.getElementById('requestModal');
-    var close = requestModal.getElementsByClassName("close")[0];
-    var button = requestModal.getElementsByClassName("formButton")[0];
-    var status = requestModal.getElementsByClassName("status")[0];
-    close.onclick = function() {
-      requestModal.style.display = "none";      
-    };
-
-    button.onclick =  function() {
-        var amount = requestModal.getElementsByClassName("amount")[0].value;
-        var reason = requestModal.getElementsByClassName("reason")[0].value;
-
-        if (amount <= 0) {
-            status.innerHTML = "Amount needs to be larger than 0";
-        } else {
-            self.addRequest(amount, reason, "");  
-            requestModal.style.display = "none";
-        }      
-    };
-};
-
-var setupRequestListModal = function () {
-    var self = this;
-
-    var listModal = document.getElementById('listModal');
-    var span = listModal.getElementsByClassName("close")[0];
-    span.onclick = function() {
-        listModal.style.display = "none";      
-    };
-};
 
 
 module.exports = {  
@@ -81,6 +48,4 @@ module.exports = {
     showAddRequestModal: showAddRequestModal,
     showRequestListModal: showRequestListModal,
     resetRequestModal: resetRequestModal,
-    setupRequestModal: setupRequestModal,
-    setupRequestListModal: setupRequestListModal,
 };

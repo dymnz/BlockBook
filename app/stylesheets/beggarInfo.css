@@ -18,7 +18,8 @@
   
   margin-top: 1vmin;
   margin-bottom: 1vmin;
-  margin-left: 2%;  
+  margin-left: 2%;
+
 }
 
 .beggarInfo .cell {
@@ -30,11 +31,21 @@
 
   text-align: center;
   font-size: 22px;
+
+  overflow: hidden;
 }
 
 .beggarInfo .name {
   width: 35%;
 }
+
+.beggarInfo .name:hover,
+.beggarInfo .name:focus {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 
 @media only screen and (min-width: 600px) {
   .beggarInfo .cell {

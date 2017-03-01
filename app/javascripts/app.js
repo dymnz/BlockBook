@@ -50,11 +50,11 @@ window.App = {
     }).then(function () {
       console.log("TODO: Change this to switch statement for different role");
 
-      UI.setupRequestModal();
-      UI.setupRequestListModal();
+      self.setupRequestModal();
+      self.setupRequestListModal();
 
       self.showGiverDefaultPage();
-      //self.showAddRequestModal();
+      //UI.showAddRequestModal();
       //self.showRequestListModal();      
     });
   },
@@ -65,24 +65,39 @@ window.App = {
     var myAccount = ContractFunctions.getMyAccount();
     if (ContractFunctions.isAdmin(myAccount)) {
       console.log("You are Admin");
-    } else if (ContractFunctions.isGiver(myAccount)) {
+    } if (ContractFunctions.isGiver(myAccount)) {
       console.log("You are Giver");
       self.showGiverDefaultPage();
-    } else if (ContractFunctions.isBeggar(myAccount)){
+    }  if (ContractFunctions.isBeggar(myAccount)){
       console.log("You are Beggar");
       self.showBeggarDefaultPage();
+      self.showRequestModalButton();
     }
   },
 
-  showGiverDefaultPage: function () {
-      var self = this;
-      self.showBeggarList();
+  showRequestModalButton: function () {
+    var header = document.getElementsByClassName("header")[0];
 
-      //TODO: inject beggar modal
+    header.innerHTML += UIBlocks.headerOption.plusButton;
+    var button = header.getElementsByClassName("plus")[0];
+
+    button.className += " addRequest";
+
+    button.addEventListener('click', function () {
+        UI.showAddRequestModal();
+    });
+
+  },
+
+  showGiverDefaultPage: function () {
+    var self = this;
+    self.showBeggarList();
+
+    //TODO: inject beggar modal
   },
 
   showBeggarDefaultPage: function () {
-      //TODO: inject request modal
+    //TODO: inject request modal
   },
 
   showBeggarList: function () {
@@ -105,12 +120,12 @@ window.App = {
       // Inject modal showing function
       table.getElementsByClassName("name")[index].addEventListener(
         'click', function () {
-        self.showRequestList(address);
+        self.showRequestList(address, false, -1);
       });
 
       var cells = table.children[index].children;
       for(var i = 0; i < cells.length; i++) {
-        cells[i].style.backgroundColor = HashColor.hashColor(address, 80+3*i);
+        cells[i].style.backgroundColor = HashColor.hashColor(address, 80+4*i);
       }
       
     });
@@ -121,28 +136,41 @@ window.App = {
     var infoList = [];
     var statusList = [];
     var beggarInfo;
+
+    var modal = document.getElementsByClassName("list-modal-content")[0];
+    var list = modal.getElementsByClassName("formContent")[0];
+
     if (ContractFunctions.getBeggarUptodate(address) != true || force) {
+      beggarInfo = ContractFunctions.getBeggarInfo(address);
+      
       Refresh.refreshRequestInfos(address).then(function (sList) {
-        statusList = sList;        
-        sList.forEach(function (status, index) {
-          infoList.push(ContractFunctions.getRequestInfo(address, index));
-        });
-        beggarInfo = ContractFunctions.getBeggarInfo(address);
-        UI.resetRequestModal(beggarInfo.name, statusList.length);
-        self.populateRequestList(statusList, infoList);
+        UI.resetRequestModal(beggarInfo.name, sList.length);
         UI.showRequestListModal();
+        sList.reverse();
+        sList.forEach(function (status, index) {
+          var ind = sList.length - index - 1;
+          var cell = list.getElementsByClassName("requestInfo")[index];
+          Refresh.refreshRequestInfo(beggarInfo.addr, ind)
+            .then(function (info) {
+              self.refreshRequestCellInfo(cell, info, status);
+            });
+        });
       });
     } else {
       infoList = ContractFunctions.getBeggarInfo(address).requestList;
       statusList = ContractFunctions.getBeggarInfo(address).requestStatusList;
       beggarInfo = ContractFunctions.getBeggarInfo(address);
       UI.resetRequestModal(beggarInfo.name, statusList.length);
-      self.populateRequestList(statusList, infoList);
+
+      statusList.forEach(function (status, index) {
+        var cell = list.getElementsByClassName("requestInfo")[index];
+        self.refreshRequestCellInfo(cell, infoList[index], statusList[index]);
+      });
       UI.showRequestListModal();
     }
   },
 
-  updateRequestCellInfo: function (cell, info, status) {
+  refreshRequestCellInfo: function (cell, info, status) {
     var self = this;
 
     cell.className = "requestInfo";
@@ -169,23 +197,44 @@ window.App = {
           self.changeRequestStatus(info.addr,
              info.index, ContractFunctions.RequestStatus.Approved)
             .then(function () {
-              self.updateRequestCellInfo(cell, info, ContractFunctions.RequestStatus.Approved);                
+              self.refreshRequestCellInfo(cell, info, ContractFunctions.RequestStatus.Approved);
              }).catch(function (e) {
+              console.log(e);
               cell.getElementsByClassName("option")[0].innerHTML
                 = "Transaction failed.";                 
-             });
-        });
+            });
+          });
       break;
       case ContractFunctions.RequestStatus.Approved:
-      cell.getElementsByClassName("option")[0].innerHTML 
-          = UIBlocks.requestInfo.paymentPendingOptions; 
-      cell.className += " yellow";
-      break;
+        cell.getElementsByClassName("option")[0].innerHTML 
+            = UIBlocks.requestInfo.paymentPendingOptions; 
+        cell.className += " yellow";
+        cell.getElementsByClassName("paid")[0].addEventListener(
+          'click', function () {
+          cell.getElementsByClassName("option")[0].innerHTML = "Ready to send...";
+
+          // Send transaction
+          self.changeRequestStatus(info.addr,
+             info.index, ContractFunctions.RequestStatus.Paid)
+            .then(function () {
+              self.refreshRequestCellInfo(cell,info,ContractFunctions.RequestStatus.Paid);                
+            }).catch(function (e) {
+              cell.getElementsByClassName("option")[0].innerHTML
+                = "Transaction failed.";                 
+            });      
+          });
+      break;  
       case ContractFunctions.RequestStatus.Disputed:
         cell.getElementsByClassName("option")[0].innerHTML 
           = UIBlocks.requestInfo.disputedOptions; 
         cell.className += " red";
       break;
+      case ContractFunctions.RequestStatus.Removed:
+        cell.className += " gray";
+      break;
+      case ContractFunctions.RequestStatus.Paid:
+        cell.className += " gray";
+      break;           
     }  
 
   },
@@ -230,6 +279,41 @@ window.App = {
     });
   },
   
+
+setupRequestModal: function () { 
+    var self = this;
+
+    var requestModal = document.getElementById('requestModal');
+    var close = requestModal.getElementsByClassName("close")[0];
+    var button = requestModal.getElementsByClassName("formButton")[0];
+    var status = requestModal.getElementsByClassName("status")[0];
+    close.onclick = function() {
+      requestModal.style.display = "none";      
+    };
+
+    button.onclick =  function() {
+        var amount = requestModal.getElementsByClassName("amount")[0].value;
+        var reason = requestModal.getElementsByClassName("reason")[0].value;
+
+        if (amount <= 0) {
+            status.innerHTML = "Amount needs to be larger than 0";
+        } else {
+            self.addRequest(amount, reason, "");  
+            requestModal.style.display = "none";
+        }      
+    };
+},
+
+setupRequestListModal: function () {
+    var self = this;
+
+    var listModal = document.getElementById('listModal');
+    var span = listModal.getElementsByClassName("close")[0];
+    span.onclick = function() {
+        listModal.style.display = "none";      
+    };
+},
+
   addEventListener: function () {
     var self = this;
 
