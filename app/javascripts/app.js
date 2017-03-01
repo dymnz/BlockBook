@@ -52,7 +52,7 @@ window.App = {
       self.setupRequestListModal();
 
       self.showGiverDefaultPage();
-      self.showAddRequestModal();
+      //self.showAddRequestModal();
       //self.showRequestListModal();      
     });
   },
@@ -113,7 +113,7 @@ window.App = {
     return ContractFunctions.refreshAdminInfo();
   },
 
-  refreshRequestList: function (address) {
+  refreshRequestInfos: function (address) {
     var self = this;
     var promises = [];
     var list;
@@ -127,6 +127,10 @@ window.App = {
         return list;
       });
     });
+  },
+
+  refreshRequestList: function (address) {
+    return ContractFunctions.refreshBeggarRequestList(address);
   },
 
   refreshRequestInfo: function (address, requestIndex) { 
@@ -173,9 +177,12 @@ window.App = {
     });
   },
 
-  resetRequestModal: function (count) {
+  resetRequestModal: function (title, count) {
       var modal = document.getElementsByClassName("list-modal-content")[0];
       var content = modal.getElementsByClassName("formContent")[0];
+
+      modal.getElementsByClassName("formTitle")[0].innerHTML = title;
+
       // Remove list
       content.innerHTML = "";
 
@@ -191,27 +198,40 @@ window.App = {
     var statusList = [];
     var beggarInfo;
     if (ContractFunctions.getBeggarUptodate(address) != true || force) {
-      self.refreshRequestList(address).then(function (sList) {
+      self.refreshRequestInfos(address).then(function (sList) {
         statusList = sList;        
         sList.forEach(function (status, index) {
           infoList.push(ContractFunctions.getRequestInfo(address, index));
         });
         beggarInfo = ContractFunctions.getBeggarInfo(address);
-        self.populateRequestList(beggarInfo, statusList, infoList);
+        self.resetRequestModal(beggarInfo.name, statusList.length);
+        self.populateRequestList(statusList, infoList);
         self.showRequestListModal();
       });
     } else {
       infoList = ContractFunctions.getBeggarInfo(address).requestList;
       statusList = ContractFunctions.getBeggarInfo(address).requestStatusList;
       beggarInfo = ContractFunctions.getBeggarInfo(address);
-      self.populateRequestList(beggarInfo, statusList, infoList);
+      self.resetRequestModal(beggarInfo.name, statusList.length);
+      self.populateRequestList(statusList, infoList);
       self.showRequestListModal();
     }
   },
 
   refreshRequestCellInfo: function (cell, info, status) {
-    console.log(cell);
+    var self = this;
+
     cell.className = "requestInfo";
+    cell.innerHTML = UIBlocks.requestInfo.innerBlock;
+    cell.getElementsByClassName("amount")[0].innerHTML 
+      = info.amount;
+    cell.getElementsByClassName("reason")[0].innerHTML 
+      = info.reason;
+    cell.getElementsByClassName("address")[0].value 
+      = info.addr;
+    cell.getElementsByClassName("requestIndex")[0].value 
+      = index;
+
     switch (Number(status)) {
       case ContractFunctions.RequestStatus.PendingApproval:
         cell.getElementsByClassName("option")[0].innerHTML 
@@ -219,13 +239,16 @@ window.App = {
         cell.className += " green";
         cell.getElementsByClassName("approve")[0].addEventListener(
           'click', function () {
-          self.changeRequestStatus(beggarInfo.addr,
-             index, ContractFunctions.RequestStatus.Approved)
+          cell.getElementsByClassName("option")[0].innerHTML = "Ready to send...";
+
+          // Send transaction
+          self.changeRequestStatus(info.addr,
+             info.index, ContractFunctions.RequestStatus.Approved)
             .then(function () {
-              self.refreshRequestInfo(cell, 
-                infoList[index], ContractFunctions.RequestStatus.Approved);
+              self.refreshRequestCellInfo(cell, info, ContractFunctions.RequestStatus.Approved);                
              }).catch(function (e) {
-                console.log(e);                 
+              cell.getElementsByClassName("option")[0].innerHTML
+                = "Transaction failed.";                 
              });
         });
       break;
@@ -243,57 +266,17 @@ window.App = {
 
   },
 
-  populateRequestList: function (beggarInfo, statusList, infoList) {
+  populateRequestList: function (statusList, infoList) {
     var self = this;
-     
-    self.resetRequestModal(statusList.length);
+
     var modal = document.getElementsByClassName("list-modal-content")[0];
     var list = modal.getElementsByClassName("formContent")[0];
-
-    modal.getElementsByClassName("formTitle")[0].innerHTML = beggarInfo.name;
 
     statusList.forEach(function (status, index) {
       var ind = statusList.length - index - 1;
       var cell = list.getElementsByClassName("requestInfo")[ind];
 
-      cell.getElementsByClassName("amount")[0].innerHTML 
-        = infoList[index].amount;
-      cell.getElementsByClassName("reason")[0].innerHTML 
-        = infoList[index].reason;
-      cell.getElementsByClassName("address")[0].value 
-        = beggarInfo.addr;
-      cell.getElementsByClassName("requestIndex")[0].value 
-        = index;
-
-      switch (Number(status)) {
-        case ContractFunctions.RequestStatus.PendingApproval:
-          cell.getElementsByClassName("option")[0].innerHTML 
-            = UIBlocks.requestInfo.approvalPendingOptions;         
-          cell.className += " green";
-          cell.getElementsByClassName("approve")[0].addEventListener(
-            'click', function () {
-            self.changeRequestStatus(beggarInfo.addr,
-               index, ContractFunctions.RequestStatus.Approved)
-              .then(function () {
-                self.refreshRequestCellInfo(cell, 
-                  infoList[index], ContractFunctions.RequestStatus.Approved);
-               }).catch(function (e) {
-                  console.log(e);                 
-               });
-          });
-        break;
-        case ContractFunctions.RequestStatus.Approved:
-        cell.getElementsByClassName("option")[0].innerHTML 
-            = UIBlocks.requestInfo.paymentPendingOptions; 
-        cell.className += " yellow";
-        break;
-        case ContractFunctions.RequestStatus.Disputed:
-          cell.getElementsByClassName("option")[0].innerHTML 
-            = UIBlocks.requestInfo.disputedOptions; 
-          cell.className += " red";
-        break;
-      }  
-
+      self.refreshRequestCellInfo(cell, infoList[index], statusList[index]);
     });
   },
 
