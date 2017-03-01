@@ -52,7 +52,7 @@ window.App = {
       self.setupRequestListModal();
 
       self.showGiverDefaultPage();
-      //self.showAddRequestModal();
+      self.showAddRequestModal();
       //self.showRequestListModal();      
     });
   },
@@ -70,12 +70,19 @@ window.App = {
     var myAccount = ContractFunctions.getMyAccount();
     if (ContractFunctions.isAdmin(myAccount)) {
       console.log("You are Admin");
-    } else if (ContractFunctions.isGiver(myAccount)) {
+    } if (ContractFunctions.isGiver(myAccount)) {
       console.log("You are Giver");
       self.showGiverDefaultPage();
-    } else if (ContractFunctions.isBeggar(myAccount)){
+    }  if (ContractFunctions.isBeggar(myAccount)){
       console.log("You are Beggar");
+      self.showRequestModalButton();
     }
+  },
+
+  showRequestModalButton: function () {
+    var header = document.getElementsByClassName("header");
+
+    header.innerHTML += UIBlocks.headerOption.plusButton;
   },
 
   showGiverDefaultPage: function () {
@@ -129,7 +136,7 @@ window.App = {
     });
   },
 
-  refreshRequestList: function (address) {
+  refreshRequestStatusList: function (address) {
     return ContractFunctions.refreshBeggarRequestList(address);
   },
 
@@ -192,13 +199,13 @@ window.App = {
       }
   },
 
-  showRequestList: function (address, force) {
+  dynamicShowRequestList: function (address, force) {
     var self = this;
     var infoList = [];
     var statusList = [];
     var beggarInfo;
     if (ContractFunctions.getBeggarUptodate(address) != true || force) {
-      self.refreshRequestInfos(address).then(function (sList) {
+      self.refreshRequestStatusList(address).then(function (sList) {
         statusList = sList;        
         sList.forEach(function (status, index) {
           infoList.push(ContractFunctions.getRequestInfo(address, index));
@@ -214,6 +221,46 @@ window.App = {
       beggarInfo = ContractFunctions.getBeggarInfo(address);
       self.resetRequestModal(beggarInfo.name, statusList.length);
       self.populateRequestList(statusList, infoList);
+      self.showRequestListModal();
+    }
+  },
+
+  showRequestList: function (address, force) {
+    var self = this;
+    var infoList = [];
+    var statusList = [];
+    var beggarInfo;
+
+    var modal = document.getElementsByClassName("list-modal-content")[0];
+    var list = modal.getElementsByClassName("formContent")[0];
+
+    if (ContractFunctions.getBeggarUptodate(address) != true || force) {
+      beggarInfo = ContractFunctions.getBeggarInfo(address);
+      
+      self.refreshRequestInfos(address).then(function (sList) {
+        self.resetRequestModal(beggarInfo.name, sList.length);
+        self.showRequestListModal();
+        sList.forEach(function (status, index) {
+          var ind = sList.length - index - 1;
+          var cell = list.getElementsByClassName("requestInfo")[ind];
+          self.refreshRequestInfo(beggarInfo.addr, index)
+            .then(function (info) {
+              self.refreshRequestCellInfo(cell, info, status);
+            });
+          
+        });
+      });
+    } else {
+      infoList = ContractFunctions.getBeggarInfo(address).requestList;
+      statusList = ContractFunctions.getBeggarInfo(address).requestStatusList;
+      beggarInfo = ContractFunctions.getBeggarInfo(address);
+      self.resetRequestModal(beggarInfo.name, statusList.length);
+      statusList.forEach(function (status, index) {
+        var ind = statusList.length - index - 1;
+        var cell = list.getElementsByClassName("requestInfo")[ind];
+
+        self.refreshRequestCellInfo(cell, infoList[index], statusList[index]);
+      });
       self.showRequestListModal();
     }
   },
@@ -246,38 +293,44 @@ window.App = {
              info.index, ContractFunctions.RequestStatus.Approved)
             .then(function () {
               self.refreshRequestCellInfo(cell, info, ContractFunctions.RequestStatus.Approved);                
-             }).catch(function (e) {
+            }).catch(function (e) {
               cell.getElementsByClassName("option")[0].innerHTML
                 = "Transaction failed.";                 
-             });
-        });
+            });
+          });
       break;
       case ContractFunctions.RequestStatus.Approved:
-      cell.getElementsByClassName("option")[0].innerHTML 
-          = UIBlocks.requestInfo.paymentPendingOptions; 
-      cell.className += " yellow";
-      break;
+        cell.getElementsByClassName("option")[0].innerHTML 
+            = UIBlocks.requestInfo.paymentPendingOptions; 
+        cell.className += " yellow";
+        cell.getElementsByClassName("paid")[0].addEventListener(
+          'click', function () {
+          cell.getElementsByClassName("option")[0].innerHTML = "Ready to send...";
+
+          // Send transaction
+          self.changeRequestStatus(info.addr,
+             info.index, ContractFunctions.RequestStatus.Approved)
+            .then(function () {
+              self.refreshRequestCellInfo(cell, info, ContractFunctions.RequestStatus.Paid);                
+            }).catch(function (e) {
+              cell.getElementsByClassName("option")[0].innerHTML
+                = "Transaction failed.";                 
+            });      
+          });
+      break;  
       case ContractFunctions.RequestStatus.Disputed:
         cell.getElementsByClassName("option")[0].innerHTML 
           = UIBlocks.requestInfo.disputedOptions; 
         cell.className += " red";
       break;
+      case ContractFunctions.RequestStatus.Removed:
+        cell.className += " gray";
+      break;
+      case ContractFunctions.RequestStatus.Paid:
+        cell.className += " gray";
+      break;           
     }  
 
-  },
-
-  populateRequestList: function (statusList, infoList) {
-    var self = this;
-
-    var modal = document.getElementsByClassName("list-modal-content")[0];
-    var list = modal.getElementsByClassName("formContent")[0];
-
-    statusList.forEach(function (status, index) {
-      var ind = statusList.length - index - 1;
-      var cell = list.getElementsByClassName("requestInfo")[ind];
-
-      self.refreshRequestCellInfo(cell, infoList[index], statusList[index]);
-    });
   },
 
   showAddRequestModal: function () {       
@@ -289,7 +342,6 @@ window.App = {
     var modal = document.getElementById('listModal');
     modal.style.display = "block";
   },
-
 
   addBeggar: function (address, name) {    
     ContractFunctions.addBeggar(address, name).then(function(result) {
