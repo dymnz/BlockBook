@@ -162,7 +162,6 @@ var getBeggarUptodate = function (address) {
 	return storage.beggarList.uptodate[index];
 }
 
-
 var isBeggar = function (address) {
 	return findBeggarListIndex(address) != -1;
 }
@@ -177,6 +176,7 @@ var isGiver = function (address) {
 
 //function Giver(addr, addressIndex, budget, approved, paid, funds, fundStatus)
 var refreshGiverInfo = function () {
+	var meta;
 	return BlockBook.deployed().then(function(instance) {            
 	    meta = instance;
 	    return meta.getGiverInfo();
@@ -193,24 +193,33 @@ var getGiverInfo = function () {
 /*Beggar function*/
 var addRequest = function (amount, reason, receiptURL) {
 	var meta;	
-
 	return BlockBook.deployed().then(function(instance) {            
 	    meta = instance;
 	    return meta.addRequest(amount, reason, receiptURL, {from: storage.myAccount, gas: 200000});
-	});plusButton
+	});
 }
 
 /*Giver function*/
 var changeRequestStatus = function (targetAddress, requestIndex, toStatus) 
 {
+	var meta;
 	return BlockBook.deployed().then(function(instance) {            
 	    meta = instance;
 	    return meta.changeRequestStatus(targetAddress, requestIndex, toStatus, {from: storage.myAccount, gas: 200000});
 	});
 }
 
+var batchApprove = function (addrs, requestIndices) {
+	var meta;
+	return BlockBook.deployed().then(function(instance) {            
+	    meta = instance;
+	    return meta.batchApprove(addrs, requestIndices, {from: storage.myAccount, gas: 200000});
+	});	
+}
+
 /*Events*/
 var roleUpdateEvent = function (arg1, arg2) {
+	var meta;
 	return BlockBook.deployed().then(function(instance) {            
 	    meta = instance;
 	    return meta.RoleUpdate(arg1, arg2);
@@ -218,6 +227,7 @@ var roleUpdateEvent = function (arg1, arg2) {
 };
 
 var newApprovalEvent = function () {
+	var meta;
 	return BlockBook.deployed().then(function(instance) {            
 	    meta = instance;
 	    return meta.NewApproval();
@@ -251,6 +261,13 @@ var disputeResolvedEvent = function () {
 	    return meta.DisputeResolved();
 	});
 };
+
+var newRejectionEvent = function () {
+	return BlockBook.deployed().then(function(instance) {            
+	    meta = instance;
+	    return meta.NewRejection();
+	});
+}
 
 // module.exports = {
 // 	initContract: initContract,
@@ -298,8 +315,10 @@ module.exports = {
 	getAdminInfo: getAdminInfo,
 	getMyAccount: getMyAccount,
 	roleUpdateEvent: roleUpdateEvent,
+	newRejectionEvent: newRejectionEvent,
 	setBeggarUptodate: setBeggarUptodate,
 	getBeggarUptodate: getBeggarUptodate,
+	batchApprove: batchApprove,
 	isBeggar: isBeggar,
 	isGiver: isGiver,
 	isAdmin: isAdmin

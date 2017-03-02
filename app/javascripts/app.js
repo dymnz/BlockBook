@@ -30,15 +30,16 @@ var AccountRole = {
 
 // View
 var myAccountRole = AccountRole.Beggar;
-var beggarTableRows = [];
-
+var tempStorage = {
+   addrs: [],
+   requestIndices: [],
+   targetStatus: -1,
+};
 
 window.App = {
   start: function() {
     var self = this;
-
-    ContractFunctions.initContract
-    (contract(blockBook_artifacts), web3);
+    ContractFunctions.initContract(contract(blockBook_artifacts), web3);
 
     Refresh.refreshGiverInfo().then(function () {
       return Refresh.refreshBeggarList();
@@ -57,8 +58,13 @@ window.App = {
 
       self.showGiverDefaultPage();
       //UI.showAddRequestModal();
-      //self.showRequestListModal();      
+      //self.showRequestListModal();
+
+      self.forTesting();      
     });
+  },
+  forTesting: function () {
+    myAccountRole = AccountRole.Giver;
   },
 
   findMyAccountRole: function () {
@@ -72,10 +78,12 @@ window.App = {
     }  if (ContractFunctions.isGiver(myAccount)) {
       console.log("You are Giver");
       self.showGiverDefaultPage();
+      myAccountRole = AccountRole.Giver;
     } if (ContractFunctions.isBeggar(myAccount)){
       console.log("You are Beggar");
       self.showBeggarDefaultPage();
       self.showAddRequestModalButton();
+      myAccountRole = AccountRole.Beggar;
     }
   },
 
@@ -161,6 +169,9 @@ window.App = {
     var modal = document.getElementsByClassName("list-modal-content")[0];
     var list = modal.getElementsByClassName("formContent")[0];
 
+    tempStorage.addrs = [];
+    tempStorage.requestIndices = [];
+
     if (ContractFunctions.getBeggarUptodate(address) != true || forceRefresh) {
       beggarInfo = ContractFunctions.getBeggarInfo(address);
       
@@ -230,114 +241,122 @@ window.App = {
     }
   },
 
+  sendAndRefreshRequestCell: function (cell, info, toStatus) {
+    var self = this;
+
+    cell.getElementsByClassName("option")[0].innerHTML = "Ready to send...";
+    self.changeRequestStatus(info.addr, info.index, toStatus).then(function () {
+      return self.refreshRequestCellInfo(cell, info, toStatus);
+    }).catch(function (e) {
+      console.log(e);
+      cell.getElementsByClassName("option")[0].innerHTML
+      = "Transaction failed.";                 
+    });
+  },
+
+  batchCommandEventListener: function (cell, info) {
+      var inStorage = -1;
+    
+      tempStorage.addrs.forEach(function (addr, index) {
+        if (addr == info.addr && info.index == tempStorage.requestIndices[index]){
+          inStorage = index;
+          return;
+        }
+      });
+      if (inStorage >= 0) {            
+        tempStorage.addrs.splice(inStorage, 1);
+        tempStorage.requestIndices.splice(inStorage, 1);
+        cell.getElementsByClassName("amount")[0].classList.remove("darker");
+      } else {
+        tempStorage.addrs.push(info.addr);
+        tempStorage.requestIndices.push(info.index);
+        cell.getElementsByClassName("amount")[0].className += " darker";
+      }
+      if (tempStorage.addrs>0) {
+        UI.toggleBatchApproveButton(true);
+      } else {
+        UI.toggleBatchApproveButton(false);
+      }            
+  },
+
   refreshRequestCellInfo: function (cell, info, status) {
     var self = this;
 
     cell.className = "requestInfo";
     cell.innerHTML = UIBlocks.requestInfo.innerBlock;
-    cell.getElementsByClassName("amount")[0].innerHTML 
-      = info.amount;
-    cell.getElementsByClassName("reason")[0].innerHTML 
-      = info.reason;
-    cell.getElementsByClassName("address")[0].value 
-      = info.addr;
-    cell.getElementsByClassName("requestIndex")[0].value 
-      = info.index;
+    cell.getElementsByClassName("amount")[0].innerHTML = info.amount;
+    cell.getElementsByClassName("reason")[0].innerHTML = info.reason;
+    cell.getElementsByClassName("address")[0].value = info.addr;
+    cell.getElementsByClassName("requestIndex")[0].value = info.index;
 
     switch (Number(status)) {
       case ContractFunctions.RequestStatus.PendingApproval:
-        cell.getElementsByClassName("option")[0].innerHTML 
-          = UIBlocks.requestInfo.approvalPendingOptions;         
-        //cell.className += " green";
+        
         cell.getElementsByClassName("amount")[0].className += " green";
         cell.getElementsByClassName("other")[0].className += " green";
 
-        cell.getElementsByClassName("approve")[0].addEventListener(
-          'click', function () {
-          cell.getElementsByClassName("option")[0].innerHTML = "Ready to send...";
+        if (myAccountRole != AccountRole.Giver)
+          break;
 
-          // Send transaction
-          self.changeRequestStatus(info.addr,
-             info.index, ContractFunctions.RequestStatus.Approved)
-            .then(function () {
-              self.refreshRequestCellInfo(cell, info, ContractFunctions.RequestStatus.Approved);
-             }).catch(function (e) {
-              console.log(e);
-              cell.getElementsByClassName("option")[0].innerHTML
-                = "Transaction failed.";                 
-            });
-        });
-        cell.getElementsByClassName("paid")[0].addEventListener(
-          'click', function () {
-          cell.getElementsByClassName("option")[0].innerHTML = "Ready to send...";
-
-          // Send transaction
-          self.changeRequestStatus(info.addr,
-             info.index, ContractFunctions.RequestStatus.Paid)
-            .then(function () {
-              self.refreshRequestCellInfo(cell, info, ContractFunctions.RequestStatus.Paid);
-             }).catch(function (e) {
-              console.log(e);
-              cell.getElementsByClassName("option")[0].innerHTML
-                = "Transaction failed.";                 
-            });
-        });
-        cell.getElementsByClassName("reject")[0].addEventListener(
-          'click', function () {
-          cell.getElementsByClassName("option")[0].innerHTML = "Ready to send...";
-
-          // Send transaction
-          self.changeRequestStatus(info.addr,
-             info.index, ContractFunctions.RequestStatus.Rejected)
-            .then(function () {
-              self.refreshRequestCellInfo(cell, info, ContractFunctions.RequestStatus.Rejected);
-             }).catch(function (e) {
-              console.log(e);
-              cell.getElementsByClassName("option")[0].innerHTML
-                = "Transaction failed.";                 
-            });
-        });        
-      break;
-      case ContractFunctions.RequestStatus.Approved:
         cell.getElementsByClassName("option")[0].innerHTML 
-            = UIBlocks.requestInfo.paymentPendingOptions; 
+          = UIBlocks.requestInfo.approvalPendingOptions; 
+        cell.getElementsByClassName("approve")[0].addEventListener('click', function () {
+          self.sendAndRefreshRequestCell(cell, info, ContractFunctions.RequestStatus.Approved);
+        });    
+        cell.getElementsByClassName("paid")[0].addEventListener('click', function () {
+          self.sendAndRefreshRequestCell(cell, info, ContractFunctions.RequestStatus.Paid);
+        });
+        cell.getElementsByClassName("reject")[0].addEventListener('click', function () {
+          self.sendAndRefreshRequestCell(cell, info, ContractFunctions.RequestStatus.Rejected);
+        });
+        cell.getElementsByClassName("amount")[0].addEventListener('click', function () {          
+          self.batchCommandEventListener(cell, info);
+        });
+      break;
+
+      case ContractFunctions.RequestStatus.Approved:
+
         cell.getElementsByClassName("amount")[0].className += " yellow";
         cell.getElementsByClassName("other")[0].className += " yellow";
-        cell.getElementsByClassName("paid")[0].addEventListener(
-          'click', function () {
-          cell.getElementsByClassName("option")[0].innerHTML = "Ready to send...";
 
-          // Send transaction
-          self.changeRequestStatus(info.addr,
-             info.index, ContractFunctions.RequestStatus.Paid)
-            .then(function () {
-              self.refreshRequestCellInfo(cell,info,ContractFunctions.RequestStatus.Paid);                
-            }).catch(function (e) {
-              cell.getElementsByClassName("option")[0].innerHTML
-                = "Transaction failed.";                 
-            });      
-          });
-      break;  
+        if (myAccountRole != AccountRole.Giver)
+          break;
+
+        cell.getElementsByClassName("option")[0].innerHTML 
+            = UIBlocks.requestInfo.paymentPendingOptions; 
+        cell.getElementsByClassName("paid")[0].addEventListener(      'click', function () {
+          self.sendAndRefreshRequestCell(cell, info, ContractFunctions.RequestStatus.Paid);
+        });
+      break; 
+
       case ContractFunctions.RequestStatus.Disputed:
         cell.getElementsByClassName("option")[0].innerHTML 
           = UIBlocks.requestInfo.disputedOptions; 
         cell.getElementsByClassName("amount")[0].className += " red";
         cell.getElementsByClassName("other")[0].className += " red";          
       break;
+
       case ContractFunctions.RequestStatus.Removed:
+        cell.getElementsByClassName("amount")[0].className += " gray opacity2 strike";
+        cell.getElementsByClassName("other")[0].className += " gray opacity2 strike"; 
+      break;
+
+      case ContractFunctions.RequestStatus.Paid:
         cell.getElementsByClassName("amount")[0].className += " gray";
         cell.getElementsByClassName("other")[0].className += " gray"; 
-      break;
-      case ContractFunctions.RequestStatus.Paid:
-        cell.getElementsByClassName("amount")[0].className += " lightGray";
-        cell.getElementsByClassName("other")[0].className += " lightGray"; 
-      break;      
+      break;  
+
       case ContractFunctions.RequestStatus.Rejected:
-        cell.getElementsByClassName("amount")[0].className += " lightGray";
-        cell.getElementsByClassName("other")[0].className += " lightGray"; 
+        cell.getElementsByClassName("amount")[0].className += " gray opacity2 strike";
+        cell.getElementsByClassName("other")[0].className += " gray opacity2 strike";
       break;                
     }  
 
+  },
+
+
+  batchApprove: function (addrs, requestIndices) {
+    return ContractFunctions.batchApprove(addrs, requestIndices);
   },
 
   populateRequestList: function (statusList, infoList) {
@@ -528,6 +547,20 @@ setupRequestListModal: function () {
     }).catch(function(e) {
       throw e;
     });     
+
+    ContractFunctions.newRejectionEvent().then( function(event){
+      event.watch(function(err, result){
+        console.log("NewRejection");
+        Refresh.refreshBeggarList().then(function () {
+          self.showBeggarList();
+        });
+        //TODO: self.refreshPaymentPeningList();
+        //TODO: self.refreshApprovalPendingList();
+        //TODO: self.refreshDisputeList();
+      })
+    }).catch(function(e) {
+      throw e;
+    }); 
 
     window.onclick = function(event) {
       var requestModal = document.getElementById('requestModal');

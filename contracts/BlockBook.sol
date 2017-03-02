@@ -21,6 +21,10 @@ contract BlockBook {
 		bool giverVote;
 		bool adminVote;
 	}
+    struct BatchRequest {
+        address addr;
+        uint24 requestIndex;
+    }
 
 	/*Member struct*/
     struct Admin {
@@ -211,7 +215,7 @@ contract BlockBook {
         giver.budget -= giver.funds[fundIndex].amount;
         giver.fundStatus[fundIndex] = FundStatus.Removed;
     }
-    
+
     function changeRequestStatus(address targetAddress, uint24 requestIndex,
     RequestStatus toStatus) onlyGiver onlyTargetBeggar(targetAddress) returns (bool)
     {
@@ -301,6 +305,15 @@ contract BlockBook {
         }
 
         return false;
+    }
+
+    function batchApprove(address[] addrs, uint24[] requestIndices) onlyGiver {
+        for (uint24 i = 0; i < requestIndices.length; i++)
+         changeRequestStatus(addrs[i], requestIndices[i], RequestStatus.Approved);
+    }
+    function batchPaid(address[] addrs, uint24[] requestIndices) onlyGiver {
+        for (uint24 i = 0; i < requestIndices.length; i++)
+         changeRequestStatus(addrs[i], requestIndices[i], RequestStatus.Paid);
     }
 
     /*Admin & Giver function*////////////////////////////////////////////////

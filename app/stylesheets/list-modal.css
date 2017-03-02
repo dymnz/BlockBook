@@ -137,9 +137,16 @@
     background-color: #dddddd;
 }
 
-.lightGray {
-    background-color: #dddddd;
-    opacity: 0.5;
+.opacity2 {
+    opacity: 0.2;
+}
+
+.darker {
+    filter: brightness(50%);
+}
+
+.strike {
+    text-decoration: line-through;
 }
 
 /* The Close Button */
