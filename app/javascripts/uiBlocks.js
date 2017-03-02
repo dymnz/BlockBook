@@ -1,7 +1,7 @@
 var headerOption = {
     plusButton: 
     `
-    <div class="button plus">&#43;</div>
+    <div class="button plus">&#10133;</div>
     `,
 };
 
