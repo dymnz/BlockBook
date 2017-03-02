@@ -18,10 +18,12 @@ var refreshRequestInfo = function (address, requestIndex) {
 
 var refreshBeggarList = function () {
   return ContractFunctions.refreshBeggarAddress().then(function(addresses) {
-    addresses.forEach(function(address, index){
-      ContractFunctions.refreshBeggarInfo(address);
-    })
-    console.log(addresses);
+    var promises = [];
+
+    addresses.forEach(function(address, index){      
+      promises.push(ContractFunctions.refreshBeggarInfo(address));
+    });
+    return Promise.all(promises);
   });
 };
 

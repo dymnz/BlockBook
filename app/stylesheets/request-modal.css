@@ -17,7 +17,7 @@
     max-width: 600px;
     background-color: #fefefe;
     margin: 15% auto; /* 15% from the top and centered */
-    padding: 20px;
+    padding: 0 20px 20px 20px;
     border: 1px solid #888;
     width: 80%; /* Could be more or less, depending on screen size */
     border-radius: 10px;
@@ -46,14 +46,14 @@
 }
 
 .request-modal-content .formTitle {
-    display: inline-block;
+    padding: 0;
+    margin: 0;
+    display: block;
+    widows: 100%;
     font-size: 4vmin;
     font-weight: bold;
     text-align: center;
     color: #666;
-}
-.request-modal-content .formHeader {
-    margin-top: 20px;
 }
 
 .request-modal-content .formContent {
@@ -89,12 +89,17 @@
 
 /* The Close Button */
 .request-modal-content .close {
+    display: block;
+    width: 100%;
+
+    text-align: right;
     color: #aaa;
     float: right;
     font-size: 5vmin;
     font-weight: bold;
+    
     position: relative;
-    top: -5vmin;
+    top: 2vmin;
 }
 
 .request-modal-content .close:hover,

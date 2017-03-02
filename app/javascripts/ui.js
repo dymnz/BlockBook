@@ -33,6 +33,9 @@ var resetRequestModal = function (title, count) {
 
 var showAddRequestModal = function () {       
     var modal = document.getElementById('requestModal');
+    modal.getElementsByClassName("amount")[0].value = "";
+    modal.getElementsByClassName("reason")[0].value = "";
+    modal.getElementsByClassName("status")[0].innerHTML = "";
     modal.style.display = "block";
 };
 

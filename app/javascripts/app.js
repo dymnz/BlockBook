@@ -76,6 +76,7 @@ window.App = {
   },
 
   showRequestModalButton: function () {
+    var self = this;
     var header = document.getElementsByClassName("header")[0];
 
     header.innerHTML += UIBlocks.headerOption.plusButton;
@@ -86,7 +87,6 @@ window.App = {
     button.addEventListener('click', function () {
         UI.showAddRequestModal();
     });
-
   },
 
   showGiverDefaultPage: function () {
@@ -146,13 +146,13 @@ window.App = {
       Refresh.refreshRequestInfos(address).then(function (sList) {
         UI.resetRequestModal(beggarInfo.name, sList.length);
         UI.showRequestListModal();
-        sList.reverse();
+
         sList.forEach(function (status, index) {
-          var ind = sList.length - index - 1;
+          var reverseIndex = sList.length - index - 1;
           var cell = list.getElementsByClassName("requestInfo")[index];
-          Refresh.refreshRequestInfo(beggarInfo.addr, ind)
+          Refresh.refreshRequestInfo(beggarInfo.addr, reverseIndex)
             .then(function (info) {
-              self.refreshRequestCellInfo(cell, info, status);
+              self.refreshRequestCellInfo(cell, info, sList[reverseIndex]);
             });
         });
       });
@@ -161,10 +161,10 @@ window.App = {
       statusList = ContractFunctions.getBeggarInfo(address).requestStatusList;
       beggarInfo = ContractFunctions.getBeggarInfo(address);
       UI.resetRequestModal(beggarInfo.name, statusList.length);
-
       statusList.forEach(function (status, index) {
+        var reverseIndex = statusList.length - index - 1;
         var cell = list.getElementsByClassName("requestInfo")[index];
-        self.refreshRequestCellInfo(cell, infoList[index], statusList[index]);
+        self.refreshRequestCellInfo(cell, infoList[reverseIndex], statusList[reverseIndex]);
       });
       UI.showRequestListModal();
     }
@@ -182,13 +182,16 @@ window.App = {
     cell.getElementsByClassName("address")[0].value 
       = info.addr;
     cell.getElementsByClassName("requestIndex")[0].value 
-      = index;
+      = info.index;
 
     switch (Number(status)) {
       case ContractFunctions.RequestStatus.PendingApproval:
         cell.getElementsByClassName("option")[0].innerHTML 
           = UIBlocks.requestInfo.approvalPendingOptions;         
-        cell.className += " green";
+        //cell.className += " green";
+        cell.getElementsByClassName("amount")[0].className += " green";
+        cell.getElementsByClassName("other")[0].className += " green";
+
         cell.getElementsByClassName("approve")[0].addEventListener(
           'click', function () {
           cell.getElementsByClassName("option")[0].innerHTML = "Ready to send...";
@@ -208,7 +211,8 @@ window.App = {
       case ContractFunctions.RequestStatus.Approved:
         cell.getElementsByClassName("option")[0].innerHTML 
             = UIBlocks.requestInfo.paymentPendingOptions; 
-        cell.className += " yellow";
+        cell.getElementsByClassName("amount")[0].className += " yellow";
+        cell.getElementsByClassName("other")[0].className += " yellow";
         cell.getElementsByClassName("paid")[0].addEventListener(
           'click', function () {
           cell.getElementsByClassName("option")[0].innerHTML = "Ready to send...";
@@ -227,13 +231,16 @@ window.App = {
       case ContractFunctions.RequestStatus.Disputed:
         cell.getElementsByClassName("option")[0].innerHTML 
           = UIBlocks.requestInfo.disputedOptions; 
-        cell.className += " red";
+        cell.getElementsByClassName("amount")[0].className += " red";
+        cell.getElementsByClassName("other")[0].className += " red";          
       break;
       case ContractFunctions.RequestStatus.Removed:
-        cell.className += " gray";
+        cell.getElementsByClassName("amount")[0].className += " gray";
+        cell.getElementsByClassName("other")[0].className += " gray"; 
       break;
       case ContractFunctions.RequestStatus.Paid:
-        cell.className += " gray";
+        cell.getElementsByClassName("amount")[0].className += " lightGray";
+        cell.getElementsByClassName("other")[0].className += " lightGray"; 
       break;           
     }  
 
@@ -330,7 +337,10 @@ setupRequestListModal: function () {
     // NewApproval event
     ContractFunctions.newApprovalEvent().then( function(event){
       event.watch(function(err, result){
-        Refresh.refreshBeggarList();
+        console.log("newApproval");
+        Refresh.refreshBeggarList().then(function () {
+          self.showBeggarList();
+        });
         //self.showRequestList(result.args._beggarAddress);
         //TODO: self.refreshApprovalPeningList();
         //TODO: self.refreshPaymentPeningList();
@@ -343,7 +353,9 @@ setupRequestListModal: function () {
     ContractFunctions.newRequestEvent().then( function(event){
       event.watch(function(err, result){
         console.log("NewRequest: " + result.args._beggarAddress);
-        Refresh.refreshBeggarList();
+        Refresh.refreshBeggarList().then(function () {
+          self.showBeggarList();
+        });
         //TODO: self.refreshApprovalPeningList();
         //TODO: self.refreshPaymentPeningList();
       })
@@ -355,7 +367,9 @@ setupRequestListModal: function () {
     ContractFunctions.newPaidEvent().then( function(event){
       event.watch(function(err, result){
         console.log("NewPaid");
-        Refresh.refreshBeggarList();
+        Refresh.refreshBeggarList().then(function () {
+          self.showBeggarList();
+        });
         //TODO: self.refreshPaymentPendingList();
       })
     }).catch(function(e) {
@@ -366,7 +380,9 @@ setupRequestListModal: function () {
     ContractFunctions.newDisputeEvent().then( function(event){
       event.watch(function(err, result){
         console.log("NewPaid");
-        Refresh.refreshBeggarList();
+        Refresh.refreshBeggarList().then(function () {
+          self.showBeggarList();
+        });
         //TODO: self.refreshPaymentPendingList();
         //TODO: self.refreshApprovalPendingList();
         //TODO: self.refreshDisputeList();
@@ -379,7 +395,9 @@ setupRequestListModal: function () {
     ContractFunctions.disputeResolvedEvent().then( function(event){
       event.watch(function(err, result){
         console.log("NewPaid");
-        Refresh.refreshBeggarList();
+        Refresh.refreshBeggarList().then(function () {
+          self.showBeggarList();
+        });
         //TODO: self.refreshPaymentPeningList();
         //TODO: self.refreshApprovalPendingList();
         //TODO: self.refreshDisputeList();
