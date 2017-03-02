@@ -13,6 +13,8 @@
     <div class="header">
         <h1>Ξ BlockBook</h1>
         <h4>Payment request system</h4>
+        <div class="button plus addRequest">&#10133;</div>
+        <div class="button plus addBeggar">&#10133;</div>
     </div>
     <div id="content">
         <div id="beggarTable">
@@ -49,7 +51,22 @@
             </div>
         </div>
     </div>
-
+    <div id="beggarModal" class="beggar-modal">
+        <div class="beggar-modal-content">
+            <div class="close">&times;</div>
+            <div class="formHeader">                
+                <div class="formTitle">Add beggar</div>                
+            </div>
+            <div class="formContent">
+                <span class="formText">Address</span>
+                <input type="text" class="address" placeholder="0x0">
+                <span class="formText">Name</span>
+                <input type="text" class="name" placeholder="Put name here">
+                <button type="button" class="formButton">Send</button>
+                <span class="status"></span>
+            </div>            
+        </div>
+    </div>
 </body>
 
 </html>

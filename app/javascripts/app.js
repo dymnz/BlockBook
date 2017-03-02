@@ -2,6 +2,7 @@
 import "../stylesheets/app.css";
 import "../stylesheets/request-modal.css";
 import "../stylesheets/list-modal.css";
+import "../stylesheets/beggar-modal.css";
 import "../stylesheets/beggarInfo.css";
 
 // Import libraries we need.
@@ -52,6 +53,7 @@ window.App = {
 
       self.setupRequestModal();
       self.setupRequestListModal();
+      self.setupBeggarModal();
 
       self.showGiverDefaultPage();
       //UI.showAddRequestModal();
@@ -61,32 +63,36 @@ window.App = {
 
   findMyAccountRole: function () {
     var self = this;
-
+    console.log("!When deployed, change if to else if!");
     var myAccount = ContractFunctions.getMyAccount();
     if (ContractFunctions.isAdmin(myAccount)) {
       console.log("You are Admin");
-    } if (ContractFunctions.isGiver(myAccount)) {
+      self.showAddBeggarModalButton();
+      myAccountRole = AccountRole.Admin;
+    }  if (ContractFunctions.isGiver(myAccount)) {
       console.log("You are Giver");
       self.showGiverDefaultPage();
-    }  if (ContractFunctions.isBeggar(myAccount)){
+    } if (ContractFunctions.isBeggar(myAccount)){
       console.log("You are Beggar");
       self.showBeggarDefaultPage();
-      self.showRequestModalButton();
+      self.showAddRequestModalButton();
     }
   },
 
-  showRequestModalButton: function () {
-    var self = this;
-    var header = document.getElementsByClassName("header")[0];
-
-    header.innerHTML += UIBlocks.headerOption.plusButton;
-    var button = header.getElementsByClassName("plus")[0];
-
-    button.className += " addRequest";
-
+  showAddRequestModalButton: function () {
+    var button = document.getElementsByClassName("addRequest")[0];
     button.addEventListener('click', function () {
         UI.showAddRequestModal();
     });
+    button.style.display = "block";
+  },
+
+  showAddBeggarModalButton: function () {
+    var button = document.getElementsByClassName("addBeggar")[0];
+    button.addEventListener('click', function () {
+        UI.showAddBeggarModal();
+    });
+    button.style.display = "block";
   },
 
   showGiverDefaultPage: function () {
@@ -123,6 +129,21 @@ window.App = {
         self.showRequestList(address, false, -1);
       });
 
+      table.getElementsByClassName("requested")[index].addEventListener(
+        'click', function () {
+        self.showRequestList(address, false, ContractFunctions.RequestStatus.PendingApproval);
+      });
+
+      table.getElementsByClassName("approved")[index].addEventListener(
+        'click', function () {
+        self.showRequestList(address, false, ContractFunctions.RequestStatus.Approved);
+      });
+
+      table.getElementsByClassName("paid")[index].addEventListener(
+        'click', function () {
+        self.showRequestList(address, false, ContractFunctions.RequestStatus.Paid);
+      });
+
       var cells = table.children[index].children;
       for(var i = 0; i < cells.length; i++) {
         cells[i].style.backgroundColor = HashColor.hashColor(address, 80+4*i);
@@ -131,7 +152,7 @@ window.App = {
     });
   },
 
-  showRequestList: function (address, force) {
+  showRequestList: function (address, forceRefresh, type) {
     var self = this;
     var infoList = [];
     var statusList = [];
@@ -140,33 +161,72 @@ window.App = {
     var modal = document.getElementsByClassName("list-modal-content")[0];
     var list = modal.getElementsByClassName("formContent")[0];
 
-    if (ContractFunctions.getBeggarUptodate(address) != true || force) {
+    if (ContractFunctions.getBeggarUptodate(address) != true || forceRefresh) {
       beggarInfo = ContractFunctions.getBeggarInfo(address);
       
       Refresh.refreshRequestInfos(address).then(function (sList) {
-        UI.resetRequestModal(beggarInfo.name, sList.length);
+        var count = 0;
+
+        // Count the number of requests that matches requested type
+        if (type == -1) {
+          count = sList.length;
+        } else {
+          sList.forEach(function (status) { 
+            if (type == status) {
+              count++;
+            }
+          });  
+        }
+        
+        UI.resetRequestModal(beggarInfo.name, count);
         UI.showRequestListModal();
 
+        var cellIndex = 0;
         sList.forEach(function (status, index) {
           var reverseIndex = sList.length - index - 1;
-          var cell = list.getElementsByClassName("requestInfo")[index];
+
+          if (type != -1 && sList[reverseIndex] != type)
+              return;
+
+          var cell = list.getElementsByClassName("requestInfo")[cellIndex];
           Refresh.refreshRequestInfo(beggarInfo.addr, reverseIndex)
             .then(function (info) {
               self.refreshRequestCellInfo(cell, info, sList[reverseIndex]);
             });
+          cellIndex++;
         });
       });
     } else {
+      var count = 0;
       infoList = ContractFunctions.getBeggarInfo(address).requestList;
       statusList = ContractFunctions.getBeggarInfo(address).requestStatusList;
       beggarInfo = ContractFunctions.getBeggarInfo(address);
-      UI.resetRequestModal(beggarInfo.name, statusList.length);
+      
+      // Count the number of requests that matches requested type
+      if (type == -1) {
+        count = statusList.length;
+      } else {
+        statusList.forEach(function (status) { 
+          if (type == status) {
+            count++;
+          }
+        });  
+      }
+      
+      UI.resetRequestModal(beggarInfo.name, count);
+      UI.showRequestListModal();
+      var cellIndex = 0;
       statusList.forEach(function (status, index) {
         var reverseIndex = statusList.length - index - 1;
-        var cell = list.getElementsByClassName("requestInfo")[index];
+
+        if (type != -1 && statusList[reverseIndex] != type)
+          return;
+
+        var cell = list.getElementsByClassName("requestInfo")[cellIndex];
         self.refreshRequestCellInfo(cell, infoList[reverseIndex], statusList[reverseIndex]);
+        cellIndex++;
       });
-      UI.showRequestListModal();
+      
     }
   },
 
@@ -206,7 +266,37 @@ window.App = {
               cell.getElementsByClassName("option")[0].innerHTML
                 = "Transaction failed.";                 
             });
-          });
+        });
+        cell.getElementsByClassName("paid")[0].addEventListener(
+          'click', function () {
+          cell.getElementsByClassName("option")[0].innerHTML = "Ready to send...";
+
+          // Send transaction
+          self.changeRequestStatus(info.addr,
+             info.index, ContractFunctions.RequestStatus.Paid)
+            .then(function () {
+              self.refreshRequestCellInfo(cell, info, ContractFunctions.RequestStatus.Paid);
+             }).catch(function (e) {
+              console.log(e);
+              cell.getElementsByClassName("option")[0].innerHTML
+                = "Transaction failed.";                 
+            });
+        });
+        cell.getElementsByClassName("reject")[0].addEventListener(
+          'click', function () {
+          cell.getElementsByClassName("option")[0].innerHTML = "Ready to send...";
+
+          // Send transaction
+          self.changeRequestStatus(info.addr,
+             info.index, ContractFunctions.RequestStatus.Rejected)
+            .then(function () {
+              self.refreshRequestCellInfo(cell, info, ContractFunctions.RequestStatus.Rejected);
+             }).catch(function (e) {
+              console.log(e);
+              cell.getElementsByClassName("option")[0].innerHTML
+                = "Transaction failed.";                 
+            });
+        });        
       break;
       case ContractFunctions.RequestStatus.Approved:
         cell.getElementsByClassName("option")[0].innerHTML 
@@ -241,7 +331,11 @@ window.App = {
       case ContractFunctions.RequestStatus.Paid:
         cell.getElementsByClassName("amount")[0].className += " lightGray";
         cell.getElementsByClassName("other")[0].className += " lightGray"; 
-      break;           
+      break;      
+      case ContractFunctions.RequestStatus.Rejected:
+        cell.getElementsByClassName("amount")[0].className += " lightGray";
+        cell.getElementsByClassName("other")[0].className += " lightGray"; 
+      break;                
     }  
 
   },
@@ -298,17 +392,44 @@ setupRequestModal: function () {
       requestModal.style.display = "none";      
     };
 
-    button.onclick =  function() {
-        var amount = requestModal.getElementsByClassName("amount")[0].value;
-        var reason = requestModal.getElementsByClassName("reason")[0].value;
+  button.onclick =  function() {
+    var amount = requestModal.getElementsByClassName("amount")[0].value;
+    var reason = requestModal.getElementsByClassName("reason")[0].value;
 
-        if (amount <= 0) {
-            status.innerHTML = "Amount needs to be larger than 0";
-        } else {
-            self.addRequest(amount, reason, "");  
-            requestModal.style.display = "none";
-        }      
-    };
+    if (amount <= 0) {
+        status.innerHTML = "Amount needs to be larger than 0";
+    } else {
+        self.addRequest(amount, reason, "");  
+        requestModal.style.display = "none";
+    }      
+  };
+},
+
+setupBeggarModal: function () { 
+  var self = this;
+
+  var beggarModal = document.getElementById('beggarModal');
+  var close = beggarModal.getElementsByClassName("close")[0];
+  var button = beggarModal.getElementsByClassName("formButton")[0];
+  var status = beggarModal.getElementsByClassName("status")[0];
+  close.onclick = function() {
+    beggarModal.style.display = "none";      
+  };
+
+  button.onclick =  function() {
+    var address = beggarModal.getElementsByClassName("address")[0].value;
+    var name = beggarModal.getElementsByClassName("name")[0].value;
+
+    if (address == "") {
+      status.innerHTML = "Address cannot be blank!";
+    } else if (name == ""){
+      status.innerHTML = "Name cannot be blank!";
+    } 
+    else {
+        self.addBeggar(address, name);  
+        beggarModal.style.display = "none";
+    }      
+  };
 },
 
 setupRequestListModal: function () {
@@ -328,7 +449,9 @@ setupRequestListModal: function () {
     ContractFunctions.roleUpdateEvent({}, {from: 'latest', to: 'latest'}).then( function(event){
       event.watch(function(err, result){
         console.log("RoleUpdate");
-        Refresh.refreshBeggarList();
+        Refresh.refreshBeggarList().then(function () {
+          self.showBeggarList();
+        });
       })
     }).catch(function(e) {
       throw e;
@@ -410,7 +533,7 @@ setupRequestListModal: function () {
       var requestModal = document.getElementById('requestModal');
       var listModal = document.getElementById('listModal');    
       if (event.target == requestModal) {
-          requestModal.style.display = "none";
+        requestModal.style.display = "none";
       } else if (event.target == listModal) {
         listModal.style.display = "none";
       }

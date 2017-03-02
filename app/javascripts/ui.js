@@ -39,14 +39,21 @@ var showAddRequestModal = function () {
     modal.style.display = "block";
 };
 
+var showAddBeggarModal = function () {       
+    var modal = document.getElementById('beggarModal');
+    console.log(modal);
+    modal.getElementsByClassName("address")[0].value = "";
+    modal.getElementsByClassName("name")[0].value = "";
+    modal.style.display = "block";
+};
+
 var showRequestListModal = function () {       
     var modal = document.getElementById('listModal');
     modal.style.display = "block";
 };
 
-
-
 module.exports = {  
+    showAddBeggarModal: showAddBeggarModal,
     resetBeggarTable: resetBeggarTable,
     showAddRequestModal: showAddRequestModal,
     showRequestListModal: showRequestListModal,

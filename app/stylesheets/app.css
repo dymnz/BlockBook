@@ -51,12 +51,18 @@ div {
   text-align: center;
   vertical-align: center;
   padding: 0;
+  display: none;
   /*margin: 3px 10px 3px 10px;*/
 }
 
 .header .addRequest {
   background-color: #ada;
 }
+
+.header .addBeggar {
+  background-color: #aad;
+}
+
 
 .header .button:hover,
 .header .button:focus {

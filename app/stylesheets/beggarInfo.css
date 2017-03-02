@@ -32,15 +32,15 @@
   text-align: center;
   font-size: 22px;
 
-  overflow: hidden;
+  overflow: auto;
 }
 
 .beggarInfo .name {
   width: 35%;
 }
 
-.beggarInfo .name:hover,
-.beggarInfo .name:focus {
+.beggarInfo .cell:hover,
+.beggarInfo .cell:focus {
     color: white;
     text-decoration: none;
     cursor: pointer;
