@@ -1,5 +1,6 @@
 ## Ξ BlockBook - Ethereum smart contract based payment request system
 
+![giver's option](https://github.com/vicodin1123/BlockBook/blob/master/Documents/pics/giver_option.png?raw=true)
 
 
 
