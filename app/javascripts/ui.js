@@ -52,10 +52,19 @@ var showRequestListModal = function () {
     modal.style.display = "block";
 };
 
+var toggleBatchApproveButton = function (status) {
+    var container = document.getElementById('batchButton');
+    if (status)
+        container.style.display = "block";
+    else
+        container.style.display = "none";
+}
+
 module.exports = {  
     showAddBeggarModal: showAddBeggarModal,
     resetBeggarTable: resetBeggarTable,
     showAddRequestModal: showAddRequestModal,
     showRequestListModal: showRequestListModal,
     resetRequestModal: resetRequestModal,
+    toggleBatchApproveButton: toggleBatchApproveButton
 };

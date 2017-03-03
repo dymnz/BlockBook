@@ -209,8 +209,18 @@ var changeRequestStatus = function (targetAddress, requestIndex, toStatus)
 	});
 }
 
+var batchPaid = function (addrs, requestIndices) {
+	var meta;
+
+	return BlockBook.deployed().then(function(instance) {            
+	    meta = instance;
+	    return meta.batchPaid(addrs, requestIndices, {from: storage.myAccount, gas: 200000});
+	});	
+}
+
 var batchApprove = function (addrs, requestIndices) {
 	var meta;
+
 	return BlockBook.deployed().then(function(instance) {            
 	    meta = instance;
 	    return meta.batchApprove(addrs, requestIndices, {from: storage.myAccount, gas: 200000});
@@ -319,6 +329,7 @@ module.exports = {
 	setBeggarUptodate: setBeggarUptodate,
 	getBeggarUptodate: getBeggarUptodate,
 	batchApprove: batchApprove,
+	batchPaid: batchPaid,
 	isBeggar: isBeggar,
 	isGiver: isGiver,
 	isAdmin: isAdmin
