@@ -200,7 +200,7 @@
 3. Utilize Solidity public modifier
 4. Beggar account transfer
 5. Multiple Givers (Departmentalize)
-
+6. Leaving comment on a request
   
 ### Vocabulary
 * Budget: The sum of all funds

@@ -1,6 +1,11 @@
 ## Ξ BlockBook - Ethereum smart contract based payment request system
 
+### Roles
+* Admin: Role assignment, Beggar removal voting
+* Giver: Payment request approving
+* Beggar: Payment requesting
 
+### 
 <p align="center"><img src="https://github.com/vicodin1123/BlockBook/blob/master/Documents/pics/giver_option.png?raw=true" alt="giver's option"></p>
 
 
