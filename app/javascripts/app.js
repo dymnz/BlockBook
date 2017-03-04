@@ -170,11 +170,12 @@ window.App = {
 
     var modal = document.getElementsByClassName("list-modal-content")[0];
     var list = modal.getElementsByClassName("formContent")[0];
-
+    
     tempStorage.addrs = [];
     tempStorage.requestIndices = [];
     tempStorage.cells = [];
 
+    UI.toggleLoadingModal(true);
     if (ContractFunctions.getBeggarUptodate(address) != true || forceRefresh) {
       beggarInfo = ContractFunctions.getBeggarInfo(address);
       
@@ -229,7 +230,9 @@ window.App = {
       
       UI.resetRequestModal(beggarInfo.name, count);
       UI.showRequestListModal();
+
       var cellIndex = 0;
+      var promises = [];
       statusList.forEach(function (status, index) {
         var reverseIndex = statusList.length - index - 1;
 
@@ -243,6 +246,8 @@ window.App = {
       
     } 
     UI.toggleBatchApproveButton(false);
+    UI.toggleLoadingModal(false);
+    
   },
 
   sendAndRefreshRequestCell: function (cell, info, toStatus) {
@@ -414,7 +419,7 @@ window.App = {
 
   addBeggar: function (address, name) {    
     ContractFunctions.addBeggar(address, name).then(function(result) {
-      console.log(result);
+      
     }).catch(function(e) {
       console.log(e);
     });
@@ -422,7 +427,7 @@ window.App = {
 
   /*Beggar function*/
   addRequest: function (amount, reason, receiptURL) {
-    ContractFunctions.addRequest(amount, reason, receiptURL).then(function(result) {
+    return ContractFunctions.addRequest(amount, reason, receiptURL).then(function(result) {
       //console.log("addRequest: " + result);
     }).catch(function(e) {
       console.log(e);
@@ -457,8 +462,13 @@ window.App = {
       if (amount <= 0) {
           status.innerHTML = "Amount needs to be larger than 0";
       } else {
-          self.addRequest(amount, reason, "");  
-          requestModal.style.display = "none";
+          button.innerHTML = "Ready to send...";    
+          ContractFunctions.addRequest(amount, reason, "").then(function () {
+            button.innerHTML = "Transaction sent";          
+          }).catch(function (e) {
+            console.log(e);
+            button.innerHTML = "Transaction failed"; 
+          });          
       }      
     };
   },
@@ -484,8 +494,13 @@ window.App = {
         status.innerHTML = "Name cannot be blank!";
       } 
       else {
-          self.addBeggar(address, name);  
-          beggarModal.style.display = "none";
+        button.innerHTML = "Ready to send...";  
+        ContractFunctions.addBeggar(address, name).then(function () {
+          button.innerHTML = "Transaction sent";   
+        }).catch(function (e) {
+          console.log(e);
+          button.innerHTML = "Transaction failed"; 
+        });
       }      
     };
   },

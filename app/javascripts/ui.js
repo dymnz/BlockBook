@@ -60,11 +60,24 @@ var toggleBatchApproveButton = function (status) {
         container.style.display = "none";
 }
 
+var toggleLoadingModal = function (status) {
+    var loadingModal = document.getElementById('loadingModal');
+    if (status){        
+        loadingModal.style.display = "block";
+        console.log("block");
+    }
+    else{
+        loadingModal.style.display = "none";    
+        console.log("none");
+    }
+}
+
 module.exports = {  
     showAddBeggarModal: showAddBeggarModal,
     resetBeggarTable: resetBeggarTable,
     showAddRequestModal: showAddRequestModal,
     showRequestListModal: showRequestListModal,
     resetRequestModal: resetRequestModal,
-    toggleBatchApproveButton: toggleBatchApproveButton
+    toggleBatchApproveButton: toggleBatchApproveButton,
+    toggleLoadingModal: toggleLoadingModal
 };
