@@ -64,11 +64,9 @@ var toggleLoadingModal = function (status) {
     var loadingModal = document.getElementById('loadingModal');
     if (status){        
         loadingModal.style.display = "block";
-        console.log("block");
     }
     else{
         loadingModal.style.display = "none";    
-        console.log("none");
     }
 }
 

@@ -58,13 +58,14 @@ window.App = {
       self.setupBeggarModal();
       self.setupBatchButton();
 
-      self.showGiverDefaultPage();
+      //self.showGiverDefaultPage();
       //UI.showAddRequestModal();
       //self.showRequestListModal();
 
-      self.forTesting();      
+      //self.forTesting();      
     });
   },
+
   forTesting: function () {
     myAccountRole = AccountRole.Giver;
   },
@@ -77,7 +78,7 @@ window.App = {
       console.log("You are Admin");
       self.showAddBeggarModalButton();
       myAccountRole = AccountRole.Admin;
-    }  if (ContractFunctions.isGiver(myAccount)) {
+    } if (ContractFunctions.isGiver(myAccount)) {
       console.log("You are Giver");
       self.showGiverDefaultPage();
       myAccountRole = AccountRole.Giver;
@@ -119,6 +120,9 @@ window.App = {
   showBeggarList: function () {
     var self = this;
   
+    if (myAccountRole != AccountRole.Giver)
+      return;
+
     var addresses = ContractFunctions.getBeggarAddress();
     
     UI.resetBeggarTable(addresses.length);
