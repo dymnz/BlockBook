@@ -391,7 +391,6 @@ window.App = {
 
   },
 
-
   batchApprove: function (addrs, requestIndices) {
     return ContractFunctions.batchApprove(addrs, requestIndices);
   },
