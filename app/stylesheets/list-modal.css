@@ -24,6 +24,8 @@
     text-align: center;
 }
 
+
+/*I can't understand why the title isn't centered*/
 .list-modal-content .formTitle {
     padding: 0;
     margin: 0;
@@ -54,9 +56,8 @@
 
 .list-modal-content .requestInfo .cell {
     display: inline-block;
-    height: 90%;
+    height: 100%;
     overflow: hidden;
-    margin: 0;
 }
 
 .list-modal-content .requestInfo .amount:before {
@@ -75,9 +76,21 @@
 .list-modal-content .requestInfo .other{
     width: 70%;
     font-size: 3vmin;
-    overflow: hidden;
+    overflow: auto;
     border-radius: 5px;
     position: relative;
+}
+
+.list-modal-content .requestInfo .createdOn{
+    display: inline-block;
+    position: relative;
+    top: -6px;
+    margin-right: 0;
+    padding: 2px 5px 2px 0;
+    width: 90%;
+    font-size: 2vmin;
+    border-radius: 5px;
+    text-align: right;
 }
 
 
@@ -104,17 +117,18 @@
     border-radius: 7px;
     position: absolute;
     bottom: 0;
-    width:100%;
+    width: 100%;
+    height: 20%;
 }
 
 .list-modal-content .option button {
     display: table-cell;
-    height: 3vh;
     border-radius: 6px;  
     box-shadow: none;
     border: none;
-    font-size: 2.5vmin;
-    margin: 0;
+    font-size: 2.6vmin;
+    margin: 3px;
+    padding: 3px 10px 3px 10px;
 }
 
 /*Dispute*/
@@ -129,12 +143,12 @@
 
 /*Waiting payment*/
 .yellow {
-    background-color: #dddd55;
+    background-color: rgba(255, 241, 133, 1);
 }
 
 /*Paid*/
 .gray {
-    background-color: #dddddd;
+    background-color: #eeeeee;
 }
 
 .opacity2 {
@@ -164,8 +178,17 @@
 }
 
 .list-modal-content .close:hover,
-.list-modal-content .close:focus {
+.list-modal-content .close:focus, {
     color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.list-modal-content .amount:hover,
+.list-modal-content .amount:focus,
+.list-modal-content button:hover,
+.list-modal-content button:focus  {
+    color: white;
     text-decoration: none;
     cursor: pointer;
 }

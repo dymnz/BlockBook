@@ -72,6 +72,7 @@ window.App = {
 
   findMyAccountRole: function () {
     var self = this;
+
     console.log("!When deployed, change if to else if!");
     var myAccount = ContractFunctions.getMyAccount();
     if (ContractFunctions.isAdmin(myAccount)) {
@@ -80,13 +81,26 @@ window.App = {
       myAccountRole = AccountRole.Admin;
     } if (ContractFunctions.isGiver(myAccount)) {
       console.log("You are Giver");
-      self.showGiverDefaultPage();
       myAccountRole = AccountRole.Giver;
-    } if (ContractFunctions.isBeggar(myAccount)){
+    } else if (ContractFunctions.isBeggar(myAccount)){
       console.log("You are Beggar");
-      self.showBeggarDefaultPage();
       self.showAddRequestModalButton();
       myAccountRole = AccountRole.Beggar;
+    }
+    self.showDefaultPage();
+  },
+
+  showDefaultPage: function () {
+    var self = this;
+
+    if (myAccountRole == AccountRole.Admin) {
+
+    } else if (myAccountRole == AccountRole.Giver) {
+      console.log("showGiverDefaultPage");
+      self.showGiverDefaultPage();
+    } else if (myAccountRole == AccountRole.Beggar){
+      console.log("showBeggarDefaultPage");
+      self.showBeggarDefaultPage();
     }
   },
 
@@ -114,17 +128,30 @@ window.App = {
   },
 
   showBeggarDefaultPage: function () {
+    var self = this;
     //TODO: inject request modal
+    self.showSingleBeggarInfo();
   },
 
-  showBeggarList: function () {
+  showSingleBeggarInfo: function () {
     var self = this;
-  
-    if (myAccountRole != AccountRole.Giver)
-      return;
 
-    var addresses = ContractFunctions.getBeggarAddress();
+    self.showBeggarList(ContractFunctions.getMyAccount());
+    var table = document.getElementById("beggarTable");
     
+
+  },
+
+  showBeggarList: function (address) {
+    var self = this;
+
+    var addresses = [];
+
+    if (address != null)
+      addresses.push(address);
+    else
+      addresses = ContractFunctions.getBeggarAddress();
+      
     UI.resetBeggarTable(addresses.length);
     var table = document.getElementById("beggarTable");
 
@@ -178,6 +205,7 @@ window.App = {
     tempStorage.addrs = [];
     tempStorage.requestIndices = [];
     tempStorage.cells = [];
+    tempStorage.targetStatus = -1;
 
     UI.toggleLoadingModal(true);
     if (ContractFunctions.getBeggarUptodate(address) != true || forceRefresh) {
@@ -249,7 +277,7 @@ window.App = {
       });
       
     } 
-    UI.toggleBatchApproveButton(false);
+    UI.toggleBatchApproveButton(0);
     UI.toggleLoadingModal(false);
     
   },
@@ -281,6 +309,10 @@ window.App = {
     else
       console.log("???");
   
+    cells.forEach(function (cell) {
+      cell.getElementsByClassName("option")[0].innerHTML = "Ready to send...";
+    });
+
     fun(addrs, requestIndices).then(function () {
       cells.forEach(function (cell, index) {
         cell.getElementsByClassName("option")[0].innerHTML = "Transaction sent";
@@ -297,18 +329,27 @@ window.App = {
   batchCommandEventListener: function (cell, info) {
       var inStorage = -1;
     
-      tempStorage.addrs.forEach(function (addr, index) {
-        if (addr == info.addr && info.index == tempStorage.requestIndices[index]){
-          inStorage = index;
-          return;
-        }
-      });
+      if (tempStorage.addrs.length == 0){
+        tempStorage.targetStatus 
+          = ContractFunctions.getBeggarInfo(info.addr).requestStatusList[info.index];
+      }
+      else {
+        tempStorage.addrs.forEach(function (addr, index) {
+          if (addr == info.addr && info.index == tempStorage.requestIndices[index]){
+            inStorage = index;
+            return;
+          }
+        });
+      }
+
       if (inStorage >= 0) {            
         tempStorage.addrs.splice(inStorage, 1);
         tempStorage.requestIndices.splice(inStorage, 1);
         tempStorage.cells.splice(inStorage, 1);
         cell.getElementsByClassName("amount")[0].classList.remove("darker");
-      } else {
+      }  
+      else if (ContractFunctions.getBeggarInfo(info.addr).
+          requestStatusList[info.index].valueOf() == tempStorage.targetStatus){
         tempStorage.addrs.push(info.addr);
         tempStorage.requestIndices.push(info.index);
         tempStorage.cells.push(cell);
@@ -316,9 +357,12 @@ window.App = {
       }
       
       if (tempStorage.addrs.length>0) {
-        UI.toggleBatchApproveButton(true);
+        if (tempStorage.targetStatus == ContractFunctions.RequestStatus.PendingApproval)          
+          UI.toggleBatchApproveButton(2);
+        else 
+          UI.toggleBatchApproveButton(1);     
       } else {
-        UI.toggleBatchApproveButton(false);
+        UI.toggleBatchApproveButton(0);
       }            
   },
 
@@ -332,12 +376,14 @@ window.App = {
     cell.getElementsByClassName("address")[0].value = info.addr;
     cell.getElementsByClassName("requestIndex")[0].value = info.index;
 
+    cell.getElementsByClassName("createdOn")[0].innerHTML = UI.timeConverter(info.createdOn);
+
     switch (Number(status)) {
       case ContractFunctions.RequestStatus.PendingApproval:
         
         cell.getElementsByClassName("amount")[0].className += " green";
         cell.getElementsByClassName("other")[0].className += " green";
-
+        cell.getElementsByClassName("createdOn")[0].className += " green";
         if (myAccountRole != AccountRole.Giver)
           break;
 
@@ -361,6 +407,7 @@ window.App = {
 
         cell.getElementsByClassName("amount")[0].className += " yellow";
         cell.getElementsByClassName("other")[0].className += " yellow";
+        cell.getElementsByClassName("createdOn")[0].className += " yellow";
 
         if (myAccountRole != AccountRole.Giver)
           break;
@@ -379,22 +426,26 @@ window.App = {
         cell.getElementsByClassName("option")[0].innerHTML 
           = UIBlocks.requestInfo.disputedOptions; 
         cell.getElementsByClassName("amount")[0].className += " red";
-        cell.getElementsByClassName("other")[0].className += " red";          
+        cell.getElementsByClassName("other")[0].className += " red";
+        cell.getElementsByClassName("createdOn")[0].className += " red";        
       break;
 
       case ContractFunctions.RequestStatus.Removed:
         cell.getElementsByClassName("amount")[0].className += " gray opacity2 strike";
-        cell.getElementsByClassName("other")[0].className += " gray opacity2 strike"; 
+        cell.getElementsByClassName("other")[0].className += " gray opacity2 strike";
+        cell.getElementsByClassName("createdOn")[0].className += " gray opacity2 strike";
       break;
 
       case ContractFunctions.RequestStatus.Paid:
         cell.getElementsByClassName("amount")[0].className += " gray";
         cell.getElementsByClassName("other")[0].className += " gray"; 
+        cell.getElementsByClassName("createdOn")[0].className += " gray";     
       break;  
 
       case ContractFunctions.RequestStatus.Rejected:
         cell.getElementsByClassName("amount")[0].className += " gray opacity2 strike";
         cell.getElementsByClassName("other")[0].className += " gray opacity2 strike";
+        cell.getElementsByClassName("createdOn")[0].className += " gray opacity2 strike";        
       break;                
     }  
 
@@ -544,7 +595,7 @@ window.App = {
       event.watch(function(err, result){
         console.log("RoleUpdate");
         Refresh.refreshBeggarList().then(function () {
-          self.showBeggarList();
+          self.showDefaultPage();
         });
       })
     }).catch(function(e) {
@@ -556,7 +607,7 @@ window.App = {
       event.watch(function(err, result){
         console.log("newApproval");
         Refresh.refreshBeggarList().then(function () {
-          self.showBeggarList();
+          self.showDefaultPage();
         });
         //self.showRequestList(result.args._beggarAddress);
         //TODO: self.refreshApprovalPeningList();
@@ -571,7 +622,7 @@ window.App = {
       event.watch(function(err, result){
         console.log("NewRequest: " + result.args._beggarAddress);
         Refresh.refreshBeggarList().then(function () {
-          self.showBeggarList();
+          self.showDefaultPage();
         });
         //TODO: self.refreshApprovalPeningList();
         //TODO: self.refreshPaymentPeningList();
@@ -585,7 +636,7 @@ window.App = {
       event.watch(function(err, result){
         console.log("NewPaid");
         Refresh.refreshBeggarList().then(function () {
-          self.showBeggarList();
+          self.showDefaultPage();
         });
         //TODO: self.refreshPaymentPendingList();
       })
@@ -598,7 +649,7 @@ window.App = {
       event.watch(function(err, result){
         console.log("NewPaid");
         Refresh.refreshBeggarList().then(function () {
-          self.showBeggarList();
+          self.showDefaultPage();
         });
         //TODO: self.refreshPaymentPendingList();
         //TODO: self.refreshApprovalPendingList();
@@ -613,7 +664,7 @@ window.App = {
       event.watch(function(err, result){
         console.log("NewPaid");
         Refresh.refreshBeggarList().then(function () {
-          self.showBeggarList();
+          self.showDefaultPage();
         });
         //TODO: self.refreshPaymentPeningList();
         //TODO: self.refreshApprovalPendingList();
@@ -627,7 +678,7 @@ window.App = {
       event.watch(function(err, result){
         console.log("NewRejection");
         Refresh.refreshBeggarList().then(function () {
-          self.showBeggarList();
+          self.showDefaultPage();
         });
         //TODO: self.refreshPaymentPeningList();
         //TODO: self.refreshApprovalPendingList();

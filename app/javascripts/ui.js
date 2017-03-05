@@ -52,12 +52,21 @@ var showRequestListModal = function () {
     modal.style.display = "block";
 };
 
-var toggleBatchApproveButton = function (status) {
-    var container = document.getElementById('batchButton');
-    if (status)
-        container.style.display = "block";
-    else
-        container.style.display = "none";
+var toggleBatchApproveButton = function (stage) {
+    var batchPaid = document.getElementById('batchPaid');
+    var batchApprove = document.getElementById('batchApprove');
+    
+    switch (stage) {
+        case 2:
+            batchApprove.style.display = "block";            
+        case 1:
+            batchPaid.style.display = "block";
+            break;
+        default:
+            batchPaid.style.display = "none";
+            batchApprove.style.display = "none";
+    }
+
 }
 
 var toggleLoadingModal = function (status) {
@@ -70,6 +79,16 @@ var toggleLoadingModal = function (status) {
     }
 }
 
+var timeConverter = function(UNIX_timestamp) {
+  var a = new Date(UNIX_timestamp * 1000);
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var year = a.getFullYear();
+  var month = months[a.getMonth()];
+  var date = a.getDate();
+  var time = date + ' ' + month + ' ' + year;
+  return time;
+}
+
 module.exports = {  
     showAddBeggarModal: showAddBeggarModal,
     resetBeggarTable: resetBeggarTable,
@@ -77,5 +96,6 @@ module.exports = {
     showRequestListModal: showRequestListModal,
     resetRequestModal: resetRequestModal,
     toggleBatchApproveButton: toggleBatchApproveButton,
-    toggleLoadingModal: toggleLoadingModal
+    toggleLoadingModal: toggleLoadingModal,
+    timeConverter: timeConverter
 };

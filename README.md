@@ -5,13 +5,13 @@ BlockBook is a full-stack decentralized payment request system.
 ### Feature
 * Ethereum smart contract as back-end
 * Web application with Web3.js to interact with the smart contract
-
+* Hacked together without proper knowledge in both Solidity and web front-end
 
 ### Why Blockchain
 * **Distributed consensus:** Both record and process logic are **not** controlled by a single party, the system can only be tempered when the majority of particapants cooperated.
 * **Decentralized system:** The system is down only when every single node in the network is down. Since there's no limit on the number of nodes and everyone can setup a node, zero downtime is achievable. 
 * **Access control:** A person in the system is represented by an address, every operation is signed with the private key of the corresponding address. Access control is done by checking the address that signs an operation. **No more username and password**.
-* **Fast development:** The core process logic that mantains record and controls access can be done
+* **Fast development:** See feature III
 
 
 ### Privacy
@@ -19,12 +19,11 @@ BlockBook is a full-stack decentralized payment request system.
 
 The tricky problem is that both payment requester and approver have to be able to decrypt the record. 
 
-One solution is to keep two copies of encrypted record, one encrypted with approver's public key, another with the requester's. The other is to use secret sharing.
+One solution is to keep two copies of encrypted record, one encrypted with approver's public key, another with the requester's. The other is to use [secret sharing](https://en.wikipedia.org/wiki/Shamir's_Secret_Sharing).
 
 Encryption also bloats the record.
 
 ### Private or Public network
-
 
 
 ### Structure

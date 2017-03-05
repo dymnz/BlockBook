@@ -103,11 +103,13 @@
 }
 
 .request-modal-content .close:hover,
-.request-modal-content .close:focus {
+.request-modal-content .close:focus{
     color: black;
     text-decoration: none;
     cursor: pointer;
 }
+
+
 
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { 

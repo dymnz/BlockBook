@@ -30,7 +30,8 @@ var requestInfo = {
         <div class="other cell">
             <div class="reason"></div>                    
             <div class="option"></div>
-        </div>                    
+        </div>
+        <div class="createdOn"></div>
         <input type="hidden" class="address"/>
         <input type="hidden" class="requestIndex"/>
     </div>`,
@@ -41,6 +42,7 @@ var requestInfo = {
         <div class="reason"></div>                    
         <div class="option"></div>
     </div>                    
+    <div class="createdOn"></div>
     <input type="hidden" class="address"/>
     <input type="hidden" class="requestIndex"/>
     `,
