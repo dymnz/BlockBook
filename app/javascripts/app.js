@@ -19,8 +19,6 @@ var UIBlocks = require('./uiBlocks');
 var Refresh = require('./refresh');
 var UI = require('./ui');
 
-console.log(ContractFunctions);
-
 // Enum
 var AccountRole = {
   Admin: 0,
