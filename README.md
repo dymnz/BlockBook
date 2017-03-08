@@ -25,16 +25,16 @@ Encryption also bloats the record.
 
 ### Private or Public network
 * Deploying on public network:
-** More secure
-** Zero downtime 
-** No server required
-** Cost real $$ to operate
+    * More secure
+    * Zero downtime 
+    * No server required
+    * Cost real $$ to operate
 
 * Deploying on private network:
-** Less secure
-** System is down when every node is down
-** Must have at least one node
-** Free to operate, but maintaining node still cost money
+    * Less secure
+    * System is down when every node is down
+    * Must have at least one node
+    * Free to operate, but maintaining node still cost money
 
 ### Structure
 Single node (Centralized):
