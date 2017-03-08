@@ -77,7 +77,10 @@
 `getFundInfo(uint24 fundIndex)`
 3. Get the list of Giver's fund status
 `listFundStatus()`
-
+4. Set a list of requests as Approved
+`batchApprove(address[] addrs, uint24[] requestIndices)`
+5. Set a list of requests as Paid
+`batchPaid(address[] addrs, uint24[] requestIndices)`
 
 ### UI function
 #### 1. Admin: 
