@@ -1,11 +1,11 @@
 var headerOption = {
     addRequestButton: 
     `
-    <div class="button plus addRequest">&#10133;</div>
+    <div class="button plus addRequest">&#43;</div>
     `,
     addBeggarButton: 
     `
-    <div class="button plus addBeggar">&#10133;</div>
+    <div class="button plus addBeggar">&#43;</div>
     `,
 };
 

@@ -71,11 +71,18 @@ $ testrpc -u 0
 $ npm install webpack -g
 $ npm install truffle -g
 $ truffle init webpack
-$ truffle compile
-$ truffle migrate
 ```
 
-#### Run
+#### Testing
 ```
+$ truffle compile
+$ truffle migrate
 $ npm run dev
+```
+
+#### Building
+```
+$ truffle compile
+$ truffle migrate       --> Creates contract artifacts
+$ npm run build         --> Creates webpage
 ```
