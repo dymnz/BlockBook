@@ -60,6 +60,7 @@ Multiple node (Decentralized):
 
 ### Usage
 1. Basic setup:
+
 Install [MetaMask](https://metamask.io/) on Chrome to access the system via browser
 or 
 Install [Mist browser](https://github.com/ethereum/mist/releases) to access the system via a standalone program
