@@ -23,7 +23,7 @@ One solution is to keep two copies of encrypted record, one encrypted with appro
 
 Encryption also bloats the record.
 
-### Private or Public network
+### Public or Private network
 * Deploying on public network:
     * More secure
     * Zero downtime 
@@ -36,7 +36,12 @@ Encryption also bloats the record.
     * Must have at least one node
     * Free to operate, but maintaining node still cost money
 
-### Structure
+Currently the system is deployed on a [Proof of Authority (PoA)](https://github.com/ethcore/parity/wiki/Proof-of-Authority-Chains) private chain. Instead of mining, the block is produced by authorities specified in the chain specification, either with list or smart contract(parity 1.6+).
+
+Using list to specify the authorities is less flexible than using smart contract, since the list of authorities cannot be changed, and the network isn't easily scalable.
+
+
+### System Structure
 Single node (Centralized):
 <p align="center"><img src="https://github.com/vicodin1123/BlockBook/blob/master/Documents/pics/structure.png?raw=true" alt="structure"></p>
 Multiple node (Decentralized):
@@ -51,6 +56,17 @@ Multiple node (Decentralized):
 * Beggar: Payment requesting
 
 <p align="center"><img src="https://github.com/vicodin1123/BlockBook/blob/master/Documents/pics/giver_option.png?raw=true" alt="giver_option"></p>
+
+
+### Usage
+1. Basic setup:
+Install [MetaMask](https://metamask.io/) on Chrome to access the system via browser
+or 
+Install [Mist browser](https://github.com/ethereum/mist/releases) to access the system via a standalone program
+
+2. Tell the Admin your address and the name you wished to display
+3. Start using
+
 
 
 
