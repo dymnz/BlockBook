@@ -62,7 +62,9 @@ Multiple node (Decentralized):
 1. Basic setup:
 
 Install [MetaMask](https://metamask.io/) on Chrome to access the system via browser
-or 
+
+or
+ 
 Install [Mist browser](https://github.com/ethereum/mist/releases) to access the system via a standalone program
 
 2. Tell the Admin your address and the name you wished to display
