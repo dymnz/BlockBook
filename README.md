@@ -64,7 +64,7 @@ Multiple node (Decentralized):
 Install [MetaMask](https://metamask.io/) on Chrome to access the system via browser
 
 or
- 
+
 Install [Mist browser](https://github.com/ethereum/mist/releases) to access the system via a standalone program
 
 2. Tell the Admin your address and the name you wished to display
@@ -72,7 +72,8 @@ Install [Mist browser](https://github.com/ethereum/mist/releases) to access the 
 
 
 
-
+### Developement Note
+https://github.com/dymnz/BlockBook/blob/master/DevelopmentNote.md
 
 ### Development Setup
 #### TestRPC
