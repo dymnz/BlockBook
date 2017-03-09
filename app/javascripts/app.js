@@ -374,14 +374,17 @@ window.App = {
     cell.getElementsByClassName("address")[0].value = info.addr;
     cell.getElementsByClassName("requestIndex")[0].value = info.index;
 
-    cell.getElementsByClassName("createdOn")[0].innerHTML = UI.timeConverter(info.createdOn);
+    // The receipt has is the hashed string of addr+reason+index+amount % 10000
+    cell.getElementsByClassName("additionalInfo")[0].innerHTML = 
+      "#"+UI.hashString(info.addr+info.reason+info.index+info.amount) + " - " + 
+    UI.timeConverter(info.createdOn);
 
+    var classes = ["amount", "other", "footer"];
+    var colorClass = "";
     switch (Number(status)) {
       case ContractFunctions.RequestStatus.PendingApproval:
-        
-        cell.getElementsByClassName("amount")[0].className += " green";
-        cell.getElementsByClassName("other")[0].className += " green";
-        cell.getElementsByClassName("createdOn")[0].className += " green";
+        colorClass = "green";
+
         if (myAccountRole != AccountRole.Giver)
           break;
 
@@ -402,10 +405,7 @@ window.App = {
       break;
 
       case ContractFunctions.RequestStatus.Approved:
-
-        cell.getElementsByClassName("amount")[0].className += " yellow";
-        cell.getElementsByClassName("other")[0].className += " yellow";
-        cell.getElementsByClassName("createdOn")[0].className += " yellow";
+        colorClass = "yellow";
 
         if (myAccountRole != AccountRole.Giver)
           break;
@@ -421,32 +421,31 @@ window.App = {
       break; 
 
       case ContractFunctions.RequestStatus.Disputed:
+        colorClass = "red";    
+
+        if (myAccountRole != AccountRole.Giver)
+          break;
+
         cell.getElementsByClassName("option")[0].innerHTML 
-          = UIBlocks.requestInfo.disputedOptions; 
-        cell.getElementsByClassName("amount")[0].className += " red";
-        cell.getElementsByClassName("other")[0].className += " red";
-        cell.getElementsByClassName("createdOn")[0].className += " red";        
+          = UIBlocks.requestInfo.disputedOptions;        
+
       break;
 
       case ContractFunctions.RequestStatus.Removed:
-        cell.getElementsByClassName("amount")[0].className += " gray opacity2 strike";
-        cell.getElementsByClassName("other")[0].className += " gray opacity2 strike";
-        cell.getElementsByClassName("createdOn")[0].className += " gray opacity2 strike";
+        colorClass = "gray opacity2 strike";    
       break;
 
       case ContractFunctions.RequestStatus.Paid:
-        cell.getElementsByClassName("amount")[0].className += " gray";
-        cell.getElementsByClassName("other")[0].className += " gray"; 
-        cell.getElementsByClassName("createdOn")[0].className += " gray";     
+        colorClass = "gray";     
       break;  
 
       case ContractFunctions.RequestStatus.Rejected:
-        cell.getElementsByClassName("amount")[0].className += " gray opacity2 strike";
-        cell.getElementsByClassName("other")[0].className += " gray opacity2 strike";
-        cell.getElementsByClassName("createdOn")[0].className += " gray opacity2 strike";        
+        colorClass = "gray opacity2 strike";        
       break;                
     }  
-
+    classes.forEach(function (ele) {
+      cell.getElementsByClassName(ele)[0].className += " " + colorClass;
+    })
   },
 
   batchApprove: function (addrs, requestIndices) {

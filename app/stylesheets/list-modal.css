@@ -81,16 +81,22 @@
     position: relative;
 }
 
-.list-modal-content .requestInfo .createdOn{
+.list-modal-content .requestInfo .footer{
     display: inline-block;
     position: relative;
     top: -6px;
+    margin-top: 3px;
     margin-right: 0;
     padding: 2px 5px 2px 0;
     width: 90%;
     font-size: 2vmin;
     border-radius: 5px;
     text-align: right;
+}
+
+.list-modal-content .requestInfo .additionalInfo {
+    float: right;
+    width: 70%;
 }
 
 

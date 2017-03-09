@@ -28,10 +28,12 @@ var requestInfo = {
     <div class="requestInfo">
         <div class="amount cell"></div>
         <div class="other cell">
-            <div class="reason"></div>                    
-            <div class="option"></div>
+            <div class="reason color"></div>                    
+            <div class="option color"></div>
         </div>
-        <div class="createdOn"></div>
+        <div class="footer">
+            <div class="additionalInfo color"></div>
+        </div>
         <input type="hidden" class="address"/>
         <input type="hidden" class="requestIndex"/>
     </div>`,
@@ -39,10 +41,12 @@ var requestInfo = {
     `
     <div class="amount cell"></div>
     <div class="other cell">
-        <div class="reason"></div>                    
-        <div class="option"></div>
+        <div class="reason color"></div>                    
+        <div class="option color"></div>
     </div>                    
-    <div class="createdOn"></div>
+    <div class="footer">
+        <div class="additionalInfo color"></div>
+    </div>
     <input type="hidden" class="address"/>
     <input type="hidden" class="requestIndex"/>
     `,

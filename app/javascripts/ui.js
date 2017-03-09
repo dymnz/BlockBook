@@ -67,7 +67,7 @@ var toggleBatchApproveButton = function (stage) {
             batchApprove.style.display = "none";
     }
 
-}
+};
 
 var toggleLoadingModal = function (status) {
     var loadingModal = document.getElementById('loadingModal');
@@ -77,7 +77,7 @@ var toggleLoadingModal = function (status) {
     else{
         loadingModal.style.display = "none";    
     }
-}
+};
 
 var timeConverter = function(UNIX_timestamp) {
   var a = new Date(UNIX_timestamp * 1000);
@@ -87,7 +87,18 @@ var timeConverter = function(UNIX_timestamp) {
   var date = a.getDate();
   var time = date + ' ' + month + ' ' + year;
   return time;
-}
+};
+
+var hashString = function(string) {
+  var hash = 0, i, chr, len;
+  if (string.length === 0) return hash;
+  for (i = 0, len = string.length; i < len; i++) {
+    chr   = string.charCodeAt(i);
+    hash  = ((hash << 5) - hash) + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash%10000;
+};
 
 module.exports = {  
     showAddBeggarModal: showAddBeggarModal,
@@ -97,5 +108,6 @@ module.exports = {
     resetRequestModal: resetRequestModal,
     toggleBatchApproveButton: toggleBatchApproveButton,
     toggleLoadingModal: toggleLoadingModal,
-    timeConverter: timeConverter
+    timeConverter: timeConverter,
+    hashString: hashString
 };
