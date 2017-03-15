@@ -44,8 +44,6 @@ Using list to specify the authorities is less flexible than using smart contract
 ### System Structure
 Single node (Centralized):
 <p align="center"><img src="https://github.com/vicodin1123/BlockBook/blob/master/Documents/pics/structure.png?raw=true" alt="structure"></p>
-Multiple node (Decentralized):
-<p align="center"><img src="https://github.com/vicodin1123/BlockBook/blob/master/Documents/pics/structure2.png?raw=true" alt="structure2"></p>
 
 ### Request Status
 <p align="center"><img src="https://github.com/vicodin1123/BlockBook/blob/master/Documents/pics/request_status.png?raw=true" alt="request_status"></p>
