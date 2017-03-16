@@ -6,7 +6,6 @@
                 "gasLimitBoundDivisor": "0x400",
                 "stepDuration": "5",
                 "validators" : {
-                    "list": ["0x850da5a7c3fd520ba2d269a1775a6223e0358790"]
                 }
             }
         }
@@ -30,11 +29,6 @@
         "0x0000000000000000000000000000000000000001": { "balance": "1", "builtin": { "name": "ecrecover", "pricing": { "linear": { "base": 3000, "word": 0 } } } },
         "0x0000000000000000000000000000000000000002": { "balance": "1", "builtin": { "name": "sha256", "pricing": { "linear": { "base": 60, "word": 12 } } } },
         "0x0000000000000000000000000000000000000003": { "balance": "1", "builtin": { "name": "ripemd160", "pricing": { "linear": { "base": 600, "word": 120 } } } },
-        "0x0000000000000000000000000000000000000004": { "balance": "1", "builtin": { "name": "identity", "pricing": { "linear": { "base": 15, "word": 3 } } } } ,
-        "0x850da5a7c3fd520ba2d269a1775a6223e0358790": { "balance": "10000000000000000000000000"}
-    },
-    "nodes": [
-        " enode://a34ff9a82b271943b319fe8ec05d5adf59457d363b785f44f68c17354dd8c854f5cde3c3818d38466ff8435d879a1087ffb2ee655ab44172df1a2d653d2468d2@140.113.66.228:30301"
-    ]
-
+        "0x0000000000000000000000000000000000000004": { "balance": "1", "builtin": { "name": "identity", "pricing": { "linear": { "base": 15, "word": 3 } } } }
+    }
 }
