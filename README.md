@@ -40,6 +40,12 @@ Currently the system is deployed on a [Proof of Authority (PoA)](https://github.
 
 Using list to specify the authorities is less flexible than using smart contract, since the list of authorities cannot be changed, and the network isn't easily scalable.
 
+### UI
+<p align="center"><img src="https://raw.githubusercontent.com/dymnz/BlockBook/master/Documents/pics/u1.png" alt="structure"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/dymnz/BlockBook/master/Documents/pics/u2.png" alt="structure"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/dymnz/BlockBook/master/Documents/pics/u3.png" alt="structure"></p>
+
+
 
 ### System Structure
 Single node (Centralized):
@@ -47,6 +53,7 @@ Single node (Centralized):
 
 ### Request Status
 <p align="center"><img src="https://github.com/vicodin1123/BlockBook/blob/master/Documents/pics/request_status.png?raw=true" alt="request_status"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/dymnz/BlockBook/master/Documents/pics/u4.png" alt="structure"></p>
 
 ### Roles
 * Admin: Role assignment
