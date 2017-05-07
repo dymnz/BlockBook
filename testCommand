@@ -14,3 +14,8 @@ web3.eth.sendTransaction({from:web3.eth.coinbase, to:"0x3653966499aC4A464d2b97f8
 
 0x0ED006f6d542fDdC7F1f8A88680f207AEfE3c8E6
 testrpc --account="0x1702b05dd939d62aaad910a5a6b9a37a024e00443dc525f0b1c7db75c83275bf,100000000000000000000" -u 0
+
+0xdc0fd4787d215766a660d59b7a70c489f635b8ab
+curl --data '{"method":"personal_newAccount","params":["hunter2"],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545
+
+curl --data '{"method":"personal_unlockAccount","params":["0xdc0fd4787d215766a660d59b7a70c489f635b8ab","hunter2",null],"id":1,"jsonrpc":"2.0"}' -H "Content-Type: application/json" -X POST localhost:8545

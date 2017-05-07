@@ -139,6 +139,13 @@ var refreshBeggarInfo = function (address) {
 	});
 }
 
+var getBookName = function () {
+	return BlockBook.deployed().then(function(instance) {            
+	    meta = instance;
+	    return meta.getBookName();
+	});
+}
+
 var findBeggarListIndex = function (_address) {	
 	var index = storage.beggarList.address.findIndex(function (address) {
 		return address == _address;
@@ -279,6 +286,8 @@ var newRejectionEvent = function () {
 	});
 }
 
+
+
 // module.exports = {
 // 	initContract: initContract,
 // 	getBeggarList: getBeggarList
@@ -332,5 +341,6 @@ module.exports = {
 	batchPaid: batchPaid,
 	isBeggar: isBeggar,
 	isGiver: isGiver,
-	isAdmin: isAdmin
+	isAdmin: isAdmin,
+	getBookName: getBookName
 };

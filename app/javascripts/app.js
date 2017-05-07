@@ -56,6 +56,7 @@ window.App = {
       self.setupBeggarModal();
       self.setupBatchButton();
 
+      self.showBookName();
       //self.showGiverDefaultPage();
       //UI.showAddRequestModal();
       //self.showRequestListModal();
@@ -116,6 +117,13 @@ window.App = {
         UI.showAddBeggarModal();
     });
     button.style.display = "block";
+  },
+
+  showBookName: function () {
+    ContractFunctions.getBookName().then(function (bookName) {
+      document.getElementById("subTitle").innerHTML += " - " + bookName;
+    });
+    
   },
 
   showGiverDefaultPage: function () {

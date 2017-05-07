@@ -52,6 +52,7 @@ contract BlockBook {
 	}
 
 	/*Storage*/
+    string bookName;
 	Admin admin;
 	Giver giver;
 	address[] beggarAddresses;
@@ -96,13 +97,12 @@ contract BlockBook {
     event RoleUpdate(address indexed _from, address indexed _to, AccountRole indexed _role);
 
 	/*Admin function*/////////////////////////////////////////////////////////
-	function BlockBook() {
+	function BlockBook(string _bookName) {
 	    admin.addr = msg.sender;
-        admin.name = "admin";
+        admin.name = "JW";
 	    
-	    // FOR TESTING
-	    addBeggar(msg.sender, "admin");
 	    giver.addr = msg.sender;
+        bookName = _bookName;
 	}
     
     function addBeggar(address targetAddress, string name) onlyAdmin {
@@ -339,6 +339,10 @@ contract BlockBook {
 	/*Admin Getter*/////////////////////////////////////////////////////////
     function getAdminInfo() constant returns (address, string) {
         return (admin.addr, admin.name);
+    }
+
+    function getBookName() constant returns (string) {
+        return bookName;
     }
 	
 	/*Beggar Getter*/////////////////////////////////////////////////////////
